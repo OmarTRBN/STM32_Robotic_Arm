@@ -31,7 +31,10 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Core/Inc/CommandProtocol.h ../Core/Inc/main.h \
  ../Core/Inc/AS5600_Multi.h ../Core/Inc/AS5600_Multi.h \
- ../Core/Inc/StepMotor.h ../Core/Inc/lut.h
+ ../Core/Inc/StepMotor.h ../Core/Inc/lut.h ../Core/Inc/Timing.h \
+ ../Core/Controllers/PID_Control.h \
+ ../Middlewares/ST/ARM/DSP/Inc/arm_math.h \
+ ../Drivers/CMSIS/Include/cmsis_compiler.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -69,3 +72,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/AS5600_Multi.h:
 ../Core/Inc/StepMotor.h:
 ../Core/Inc/lut.h:
+../Core/Inc/Timing.h:
+../Core/Controllers/PID_Control.h:
+../Middlewares/ST/ARM/DSP/Inc/arm_math.h:
+../Drivers/CMSIS/Include/cmsis_compiler.h:

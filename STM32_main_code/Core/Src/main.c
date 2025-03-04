@@ -24,6 +24,9 @@
 #include "CommandProtocol.h"
 #include "AS5600_Multi.h"
 #include "StepMotor.h"
+#include "Timing.h"
+
+#include "PID_Control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -57,9 +60,19 @@ int statusCheck = 0;
 CommandProtocol_Handle cmdHandle;
 
 AS5600_HandleTypeDef as5600;
-uint16_t angle;
+uint16_t angle = 2048;
 
 StepMotor l1_motor;
+
+float32_t Kp[NUM_JOINTS*NUM_JOINTS] = { 1.0, 0.0,
+					  	  	  	  	    1.0, 32.0 };
+float32_t Ki[NUM_JOINTS*NUM_JOINTS] = { 0.0, 0.0,
+					  	  	  	  	  	0.0, 0.0 };
+float32_t Kd[NUM_JOINTS*NUM_JOINTS] = { 0.0, 0.0,
+					  	  	  	  	  	0.0, 0.0 };
+float32_t q_set[NUM_JOINTS] = { 2048.0, 2048.0 };
+float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0 };
+MultivariablePID pidObj;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,6 +84,7 @@ static void MX_TIM1_Init(void);
 static void MX_TIM11_Init(void);
 /* USER CODE BEGIN PFP */
 void MyProcessCommand(CommandProtocol_Handle* handle, char *dataArray);
+void controllerToMotors(StepMotor* motor, float);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -103,7 +117,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  DWT_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -113,7 +127,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
-  HAL_TIM_Base_Start_IT(&htim11); // Start controller timer
+
 
   statusCheck = CommandProtocol_Init(&cmdHandle, &huart1, 100);
 
@@ -122,7 +136,8 @@ int main(void)
   statusCheck = StepMotor_Init(&l1_motor, &htim1, TIM_CHANNEL_3, M1_DIR_GPIO_Port, M1_DIR_Pin);
   StepMotor_SetSpeedLUT(&l1_motor, 0, 0); // Motor not moving initially
 
-//  uint32_t lastUpdateTime = HAL_GetTick();
+  MultivariablePID_Init(&pidObj, Kp, Ki, Kd);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -134,20 +149,21 @@ int main(void)
     /* USER CODE BEGIN 3 */
 	  if(globalControllerFlag)
 	  {
-		  // Run complex PID calculation
-
-		  // Update motor outputs
-
-		  // Clear flag
 		  globalControllerFlag = 0;
+		  float controller_dt = DWT_GetDeltaTime();
+		  pidObj.dt = (float32_t)controller_dt;
+		  MultivariablePID_Compute(&pidObj, q_meas);
 	  }
+	  statusCheck = AS5600_ReadAngle(&as5600, &angle);
 
-//	  if (HAL_GetTick() - lastUpdateTime >= 5000)  // 3000 ms = 3 sec
-//	  {
-//		 lastUpdateTime = HAL_GetTick();
-//
-//
-//	  }
+	  if (statusCheck != HAL_OK)
+	  {
+		  CommandProtocol_SendResponse(&cmdHandle, "AS5600 reading gone wrong!\n");
+	  }
+	  else
+	  {
+		  q_meas[0] = (float)angle;
+	  }
   }
   /* USER CODE END 3 */
 }
@@ -323,9 +339,9 @@ static void MX_TIM11_Init(void)
 
   /* USER CODE END TIM11_Init 1 */
   htim11.Instance = TIM11;
-  htim11.Init.Prescaler = 500-1;
+  htim11.Init.Prescaler = 1000-1;
   htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim11.Init.Period = 1000-1;
+  htim11.Init.Period = 500-1;
   htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim11.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim11) != HAL_OK)
@@ -333,7 +349,7 @@ static void MX_TIM11_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM11_Init 2 */
-
+  HAL_TIM_Base_Start_IT(&htim11); // Start controller timer
   /* USER CODE END TIM11_Init 2 */
 
 }
@@ -463,20 +479,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-    if (htim->Instance == TIM11)
+    if (htim->Instance == TIM11) // Controller timer
     {
-    	HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
     	// Replace this with multi sensor reading
     	statusCheck = AS5600_ReadAngle(&as5600, &angle);
-
-    	if (statusCheck != HAL_OK)
-    	{
-    		CommandProtocol_SendResponse(&cmdHandle, "AS5600 reading gone wrong!\n");
-    	}
-    	else
-    	{
-    		globalControllerFlag = 1;
-    	}
+    	globalControllerFlag = 1;
     }
 }
 /* USER CODE END 4 */
