@@ -24,8 +24,13 @@ typedef struct {
     uint16_t dir_gpio_pin;
 } StepMotor;
 
-HAL_StatusTypeDef StepMotor_Init(StepMotor* motor, TIM_HandleTypeDef* timer, uint32_t tim_channel, GPIO_TypeDef* dir_gpio_port, uint16_t dir_gpio_pin);
-void StepMotor_SetSpeedLUT(StepMotor* motor, int16_t speed, int direction);
+HAL_StatusTypeDef StepMotor_Init(
+		StepMotor* motor,
+		TIM_HandleTypeDef* timer,
+		uint32_t tim_channel,
+		GPIO_TypeDef* dir_gpio_port,
+		uint16_t dir_gpio_pin);
+void StepMotor_SetSpeedLUT(StepMotor* motor, int16_t speed);
 void StepMotor_Stop(StepMotor* motor);
 void StepMotor_Start(StepMotor* motor);
 

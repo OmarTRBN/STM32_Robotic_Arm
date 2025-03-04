@@ -16,9 +16,7 @@ HAL_StatusTypeDef StepMotor_Init(StepMotor* motor, TIM_HandleTypeDef* timer, uin
 	return HAL_TIM_OC_Start(motor->timer, motor->channel);
 }
 
-void StepMotor_SetSpeedLUT(StepMotor* motor, int16_t speed, int direction) {
-	HAL_GPIO_WritePin(motor->dir_gpio_port, motor->dir_gpio_pin, direction);
-
+void StepMotor_SetSpeedLUT(StepMotor* motor, int16_t speed) {
 	if (speed == 0)
 	{
 		__HAL_TIM_SET_PRESCALER(motor->timer, 0xFFFF);
@@ -26,6 +24,16 @@ void StepMotor_SetSpeedLUT(StepMotor* motor, int16_t speed, int direction) {
 		motor->timer->Instance->CNT = 0;  // Optional: reset counter
 		motor->timer->Instance->EGR |= TIM_EGR_UG;
 		return;
+	}
+
+	if (speed < 0)
+	{
+		HAL_GPIO_WritePin(motor->dir_gpio_port, motor->dir_gpio_pin, STEP_MOTOR_CW);
+		speed = -speed;
+	}
+	else
+	{
+		HAL_GPIO_WritePin(motor->dir_gpio_port, motor->dir_gpio_pin, STEP_MOTOR_CCW);
 	}
 
 	if (speed > MAX_LUT_SPEED)

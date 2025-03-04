@@ -39,8 +39,6 @@ typedef struct {
 	arm_matrix_instance_f32 temp2_N_1_mat;  // Second temporary Nx1 matrix
 
     float32_t dt;                  // Sample time in seconds
-//    float32_t max_output;          // Output saturation upper limit
-//    float32_t min_output;          // Output saturation lower limit
 } MultivariablePID;
 
 void MultivariablePID_Init(MultivariablePID *pid, float32_t *Kp_f32, float32_t *Ki_f32, float32_t *Kd_f32);

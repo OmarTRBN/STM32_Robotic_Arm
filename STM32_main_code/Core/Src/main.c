@@ -64,11 +64,11 @@ uint16_t angle = 2048;
 
 StepMotor l1_motor;
 
-float32_t Kp[NUM_JOINTS*NUM_JOINTS] = { 1.0, 0.0,
-					  	  	  	  	    1.0, 32.0 };
-float32_t Ki[NUM_JOINTS*NUM_JOINTS] = { 0.0, 0.0,
+float32_t Kp[NUM_JOINTS*NUM_JOINTS] = { 4.2, 0.0,
+					  	  	  	  	    0.0, 3.2 };
+float32_t Ki[NUM_JOINTS*NUM_JOINTS] = { 4.3, 0.0,
 					  	  	  	  	  	0.0, 0.0 };
-float32_t Kd[NUM_JOINTS*NUM_JOINTS] = { 0.0, 0.0,
+float32_t Kd[NUM_JOINTS*NUM_JOINTS] = { 0.4, 0.0,
 					  	  	  	  	  	0.0, 0.0 };
 float32_t q_set[NUM_JOINTS] = { 2048.0, 2048.0 };
 float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0 };
@@ -84,7 +84,7 @@ static void MX_TIM1_Init(void);
 static void MX_TIM11_Init(void);
 /* USER CODE BEGIN PFP */
 void MyProcessCommand(CommandProtocol_Handle* handle, char *dataArray);
-void controllerToMotors(StepMotor* motor, float);
+void ControllerToMotors(StepMotor* motor, float rawOutput);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -134,7 +134,7 @@ int main(void)
   statusCheck = AS5600_Init(&as5600, &hi2c1);
 
   statusCheck = StepMotor_Init(&l1_motor, &htim1, TIM_CHANNEL_3, M1_DIR_GPIO_Port, M1_DIR_Pin);
-  StepMotor_SetSpeedLUT(&l1_motor, 0, 0); // Motor not moving initially
+  StepMotor_SetSpeedLUT(&l1_motor, 0); // Motor not moving initially
 
   MultivariablePID_Init(&pidObj, Kp, Ki, Kd);
 
@@ -164,6 +164,8 @@ int main(void)
 	  {
 		  q_meas[0] = (float)angle;
 	  }
+
+	  ControllerToMotors(&l1_motor, pidObj.output_data[0]);
   }
   /* USER CODE END 3 */
 }
@@ -460,12 +462,16 @@ void MyProcessCommand(CommandProtocol_Handle* handle, char *dataArray) {
             if(handle->rxIndex > 1)
             {
                 uint16_t freq = atoi((const char*)&handle->rxBuffer[1]);
-				StepMotor_SetSpeedLUT(&l1_motor, freq, STEP_MOTOR_CW);
+				StepMotor_SetSpeedLUT(&l1_motor, freq);
 				sprintf(response, "Frequency set to: %d\n", freq);
 				CommandProtocol_SendResponse(handle, response);
             }
             break;
     }
+}
+
+void ControllerToMotors(StepMotor* motor, float rawOutput) {
+	StepMotor_SetSpeedLUT(motor, pidObj.output_data[0]);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
