@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "stm32_ra_boards")(type "KiCad")(uri "${KIPRJMOD}/stm32_ra_boards.kicad_sym")(options "")(descr ""))
+)
