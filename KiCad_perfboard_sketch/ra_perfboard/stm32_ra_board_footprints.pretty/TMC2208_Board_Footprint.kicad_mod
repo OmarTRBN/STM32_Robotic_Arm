@@ -1,10 +1,10 @@
 (footprint "TMC2208_Board_Footprint"
-	(version 20240108)
+	(version 20241229)
 	(generator "pcbnew")
-	(generator_version "8.0")
+	(generator_version "9.0")
 	(layer "F.Cu")
 	(property "Reference" "REF**"
-		(at 1.754 0 -90)
+		(at 1.754 0 270)
 		(unlocked yes)
 		(layer "F.SilkS")
 		(uuid "be814e34-4c12-4bdb-a69a-819f978657d6")
@@ -16,23 +16,10 @@
 		)
 	)
 	(property "Value" "TMC2208_Board_Footprint"
-		(at 0.254 0 -90)
+		(at 0.254 0 270)
 		(unlocked yes)
 		(layer "F.Fab")
 		(uuid "3a03766f-439c-4b57-ba76-5acb913e4e6e")
-		(effects
-			(font
-				(size 1 1)
-				(thickness 0.15)
-			)
-		)
-	)
-	(property "Footprint" ""
-		(at 0 0 0)
-		(unlocked yes)
-		(layer "F.Fab")
-		(hide yes)
-		(uuid "db1046b3-823b-47f3-84a8-b0d361e6af12")
 		(effects
 			(font
 				(size 1 1)
@@ -74,12 +61,12 @@
 			(width 0.15)
 			(type default)
 		)
-		(fill none)
+		(fill no)
 		(layer "F.SilkS")
 		(uuid "4e044bc9-8121-4063-a75c-db0eb66e3553")
 	)
 	(fp_text user "${REFERENCE}"
-		(at -1.246 0 -90)
+		(at -1.246 0 270)
 		(unlocked yes)
 		(layer "F.Fab")
 		(uuid "87d7525e-f621-4f97-8069-adc802ce6968")
@@ -218,4 +205,5 @@
 		(remove_unused_layers no)
 		(uuid "ec394487-4f9a-4534-8964-a0539b5dcabc")
 	)
+	(embedded_fonts no)
 )
