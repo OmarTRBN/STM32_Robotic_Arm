@@ -53,26 +53,34 @@ TIM_HandleTypeDef htim11;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-char globalDataArray[50];
+// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
+char globalDataArray[1100];
 volatile uint8_t globalControllerFlag = 0;
 int statusCheck = 0;
-
+// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 CommandProtocol_Handle cmdHandle;
-
+// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 AS5600_HandleTypeDef as5600;
 uint16_t angle = 2048;
-
+// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 StepMotor l1_motor;
-
-float32_t Kp[NUM_JOINTS*NUM_JOINTS] = { 4.2, 0.0,
-					  	  	  	  	    0.0, 3.2 };
-float32_t Ki[NUM_JOINTS*NUM_JOINTS] = { 4.3, 0.0,
-					  	  	  	  	  	0.0, 0.0 };
-float32_t Kd[NUM_JOINTS*NUM_JOINTS] = { 0.4, 0.0,
-					  	  	  	  	  	0.0, 0.0 };
-float32_t q_set[NUM_JOINTS] = { 2048.0, 2048.0 };
-float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0 };
+// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
+float32_t Kp[NUM_JOINTS*NUM_JOINTS] = { 4.2, 0.0, 0.0, 0.0,
+										0.0, 3.2, 0.0, 0.0,
+					  	  	  	  	    0.0, 0.0, 0.0, 0.0,
+										0.0, 0.0, 0.0, 0.0 };
+float32_t Ki[NUM_JOINTS*NUM_JOINTS] = { 4.3, 0.0, 0.0, 0.0,
+										0.0, 3.2, 0.0, 0.0,
+										0.0, 0.0, 0.0, 0.0,
+										0.0, 0.0, 0.0, 0.0 };
+float32_t Kd[NUM_JOINTS*NUM_JOINTS] = { 0.4, 0.0, 0.0, 0.0,
+										0.0, 0.0, 0.0, 0.0,
+										0.0, 0.0, 0.0, 0.0,
+										0.0, 0.0, 0.0, 0.0 };
+float32_t q_set[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
+float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
 MultivariablePID pidObj;
+// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -83,13 +91,13 @@ static void MX_I2C1_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM11_Init(void);
 /* USER CODE BEGIN PFP */
-void MyProcessCommand(CommandProtocol_Handle* handle, char *dataArray);
+void MyProcessCommand(CommandProtocol_Handle* handle);
 void ControllerToMotors(StepMotor* motor, float rawOutput);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 /* USER CODE END 0 */
 
 /**
@@ -101,7 +109,6 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 	CommandProtocol_SetCommandProcessor(MyProcessCommand);
-	// 🥊
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -127,17 +134,14 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM11_Init();
   /* USER CODE BEGIN 2 */
-
-
   statusCheck = CommandProtocol_Init(&cmdHandle, &huart1, 100);
 
   statusCheck = AS5600_Init(&as5600, &hi2c1);
 
   statusCheck = StepMotor_Init(&l1_motor, &htim1, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin);
-  StepMotor_SetSpeedLUT(&l1_motor, 0); // Motor not moving initially
+  StepMotor_SetSpeedLUT(&l1_motor, 0); // Set motor speed to 0 Initially
 
   MultivariablePID_Init(&pidObj, Kp, Ki, Kd);
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -150,22 +154,24 @@ int main(void)
 	  if(globalControllerFlag)
 	  {
 		  globalControllerFlag = 0;
+
 		  float controller_dt = DWT_GetDeltaTime();
 		  pidObj.dt = (float32_t)controller_dt;
+
 		  MultivariablePID_Compute(&pidObj, q_meas);
 	  }
-	  statusCheck = AS5600_ReadAngle(&as5600, &angle);
-
-	  if (statusCheck != HAL_OK)
-	  {
-		  CommandProtocol_SendResponse(&cmdHandle, "AS5600 reading gone wrong!\n");
-	  }
-	  else
-	  {
-		  q_meas[0] = (float)angle;
-	  }
-
-	  ControllerToMotors(&l1_motor, pidObj.output_data[0]);
+//	  statusCheck = AS5600_ReadAngle(&as5600, &angle);
+//
+//	  if (statusCheck != HAL_OK)
+//	  {
+//		  CommandProtocol_SendResponse(&cmdHandle, "AS5600 reading gone wrong!\n");
+//	  }
+//	  else
+//	  {
+//		  q_meas[0] = (float)angle;
+//	  }
+//
+//	  ControllerToMotors(&l1_motor, pidObj.output_data[0]);
   }
   /* USER CODE END 3 */
 }
@@ -407,10 +413,17 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(M1_DIR_GPIO_Port, M1_DIR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, TEST_LED_Pin|GPIO_PIN_14|M1_DIR_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(M1_EN_GPIO_Port, M1_EN_Pin, GPIO_PIN_RESET);
+
+  /*Configure GPIO pins : TEST_LED_Pin PC14 */
+  GPIO_InitStruct.Pin = TEST_LED_Pin|GPIO_PIN_14;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : M1_DIR_Pin */
   GPIO_InitStruct.Pin = M1_DIR_Pin;
@@ -479,14 +492,21 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void MyProcessCommand(CommandProtocol_Handle* handle, char *dataArray) {
-    CommandID cmdId = handle->rxBuffer[0];
+void MyProcessCommand(CommandProtocol_Handle* handle) {
+	// Combine the first two characters into a 16-bit integer
+	uint16_t encodedCommand = (handle->rxBuffer[0] << 8) | handle->rxBuffer[1];
     char response[50];
 
-    switch(cmdId) {
-        case CMD_LED_CONTROL:
+    switch(encodedCommand) {
+        case CMD_TEST_LED:
             CommandProtocol_SendResponse(handle, "LED TOGGLED!\n");
+            HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
             break;
+        case CMD_SET_PID_PARAMS:
+        	sprintf(globalDataArray, "PID:%s\n", &handle->rxBuffer[2]);
+        	CommandProtocol_SendResponse(handle, globalDataArray);
+        	// Implement parsing function.
+        	break;
 
         case CMD_AS5600_DATA:
             // Direct access to your global as5600Sensor
@@ -498,16 +518,21 @@ void MyProcessCommand(CommandProtocol_Handle* handle, char *dataArray) {
             // Direct access to your global stepMotor
             if(handle->rxIndex > 1)
             {
-                uint16_t freq = atoi((const char*)&handle->rxBuffer[1]);
+                uint16_t freq = atoi((const char*)&handle->rxBuffer[2]);
 				StepMotor_SetSpeedLUT(&l1_motor, freq);
 				sprintf(response, "Frequency set to: %d\n", freq);
 				CommandProtocol_SendResponse(handle, response);
             }
             break;
+        default:
+            sprintf(globalDataArray, "Unknown command: %d\n", encodedCommand);
+        	CommandProtocol_SendResponse(handle, globalDataArray);
+        	break;
     }
 }
 
 void ControllerToMotors(StepMotor* motor, float rawOutput) {
+	// Apply controller output to motors
 	StepMotor_SetSpeedLUT(motor, pidObj.output_data[0]);
 }
 
@@ -515,7 +540,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if (huart == cmdHandle.huart) {
 		uint8_t receivedByte = cmdHandle.rxBuffer[cmdHandle.rxIndex];
-		CommandProtocol_ProcessByte(&cmdHandle, receivedByte, globalDataArray);
+		CommandProtocol_ProcessByte(&cmdHandle, receivedByte);
 		HAL_UART_Receive_IT(huart, &cmdHandle.rxBuffer[cmdHandle.rxIndex], 1);
 	}
 }
@@ -525,7 +550,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
     if (htim->Instance == TIM11) // Controller timer
     {
     	// Replace this with multi sensor reading
-    	statusCheck = AS5600_ReadAngle(&as5600, &angle);
+//    	statusCheck = AS5600_ReadAngle(&as5600, &angle);
     	globalControllerFlag = 1;
     }
 }

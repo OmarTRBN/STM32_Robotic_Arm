@@ -27,7 +27,7 @@ HAL_StatusTypeDef CommandProtocol_Init(CommandProtocol_Handle* handle, UART_Hand
     return HAL_UART_Receive_IT(handle->huart, &handle->rxBuffer[0], 1);
 }
 
-HAL_StatusTypeDef CommandProtocol_ProcessByte(CommandProtocol_Handle* handle, uint8_t byte, char* dataArray) {
+HAL_StatusTypeDef CommandProtocol_ProcessByte(CommandProtocol_Handle* handle, uint8_t byte) {
     if (!handle->isInitialized) {
         return HAL_ERROR;
     }
@@ -36,11 +36,12 @@ HAL_StatusTypeDef CommandProtocol_ProcessByte(CommandProtocol_Handle* handle, ui
     {
         if (byte == '\n' || byte == '\r')
         {
+        	// Terminate the string
             handle->rxBuffer[handle->rxIndex] = '\0';
 
             if (CustomProcessCommand != NULL)
             {
-                CustomProcessCommand(handle, dataArray);
+                CustomProcessCommand(handle);
             }
             else
             {
@@ -51,10 +52,11 @@ HAL_StatusTypeDef CommandProtocol_ProcessByte(CommandProtocol_Handle* handle, ui
         }
         else
         {
-            handle->rxBuffer[handle->rxIndex++] = byte;
+        	handle->rxBuffer[handle->rxIndex] = byte; // Store the received byte in the buffer
+        	handle->rxIndex++; // Move to the next position in the buffer
         }
     }
-    else
+    else // Reset index to 0
     {
         handle->rxIndex = 0;
     }

@@ -46,7 +46,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-#define NUM_JOINTS 2
+#define NUM_JOINTS 4
 /* USER CODE END EM */
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);
@@ -59,6 +59,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define TEST_LED_Pin GPIO_PIN_13
+#define TEST_LED_GPIO_Port GPIOC
 #define M1_DIR_Pin GPIO_PIN_15
 #define M1_DIR_GPIO_Port GPIOC
 #define M1_EN_Pin GPIO_PIN_3

@@ -1,4 +1,4 @@
 ../Core/Src/CommandProtocol.c:13:6:CommandProtocol_SetCommandProcessor	1
 ../Core/Src/CommandProtocol.c:17:19:CommandProtocol_Init	3
-../Core/Src/CommandProtocol.c:30:19:CommandProtocol_ProcessByte	6
-../Core/Src/CommandProtocol.c:64:19:CommandProtocol_SendResponse	3
+../Core/Src/CommandProtocol.c:30:19:CommandProtocol_ProcessByte	5
+../Core/Src/CommandProtocol.c:66:19:CommandProtocol_SendResponse	3
