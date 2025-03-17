@@ -1,5 +1,5 @@
 "./Core/Controllers/PID_Control.o"
-"./Core/Src/AS5600_Multi.o"
+"./Core/Src/AS5600_Mux.o"
 "./Core/Src/CommandProtocol.o"
 "./Core/Src/StepMotor.o"
 "./Core/Src/Timing.o"

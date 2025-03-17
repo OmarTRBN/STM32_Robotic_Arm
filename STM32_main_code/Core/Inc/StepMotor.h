@@ -9,7 +9,6 @@
 #define INC_STEPMOTOR_H_
 
 #include "main.h"
-#include "lut.h"
 
 #define MIN_LUT_SPEED 1
 #define MAX_LUT_SPEED LUT_SIZE
@@ -22,6 +21,8 @@ typedef struct {
     uint32_t channel;
     GPIO_TypeDef* dir_gpio_port;
     uint16_t dir_gpio_pin;
+    int16_t last_speed;
+    int8_t dir_polarity;
 } StepMotor;
 
 HAL_StatusTypeDef StepMotor_Init(

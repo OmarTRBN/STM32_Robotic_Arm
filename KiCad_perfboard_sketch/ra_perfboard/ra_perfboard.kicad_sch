@@ -3817,26 +3817,6 @@
 	)
 	(wire
 		(pts
-			(xy 130.81 66.04) (xy 129.54 66.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1350bd0d-985c-470b-a28e-b20186dd1096")
-	)
-	(wire
-		(pts
-			(xy 130.81 63.5) (xy 129.54 63.5)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "17572593-c833-4095-9c0a-2d82fa9f7044")
-	)
-	(wire
-		(pts
 			(xy 40.64 120.65) (xy 40.64 121.92)
 		)
 		(stroke
@@ -3904,6 +3884,16 @@
 			(type default)
 		)
 		(uuid "38e5bbeb-22d1-4cb2-8ce2-ed7896efd52b")
+	)
+	(wire
+		(pts
+			(xy 130.81 60.96) (xy 129.54 60.96)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "40d9be98-ec98-47ee-a44b-fd2f77c82522")
 	)
 	(wire
 		(pts
@@ -4067,13 +4057,23 @@
 	)
 	(wire
 		(pts
-			(xy 130.81 68.58) (xy 129.54 68.58)
+			(xy 130.81 58.42) (xy 129.54 58.42)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "7f77e44f-67bb-487e-a874-233b61bbd83d")
+		(uuid "80c43984-7fcf-4f5e-a11e-e94d57cf0f75")
+	)
+	(wire
+		(pts
+			(xy 130.81 63.5) (xy 129.54 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8377712f-7c35-4c83-bb60-1bc29e323d7e")
 	)
 	(wire
 		(pts
@@ -4526,7 +4526,7 @@
 		(uuid "840578b4-f466-4075-9b54-29652e22ad9a")
 	)
 	(label "M2_STEP"
-		(at 130.81 68.58 0)
+		(at 130.81 60.96 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4566,7 +4566,7 @@
 		(uuid "aa6173da-9130-4ab3-a9c1-43b93b189e14")
 	)
 	(label "M2_DIR"
-		(at 130.81 63.5 0)
+		(at 130.81 58.42 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4626,7 +4626,7 @@
 		(uuid "bb9b6e4a-765e-4b5b-a9be-e796be94ea1d")
 	)
 	(label "M2_EN"
-		(at 130.81 66.04 0)
+		(at 130.81 63.5 0)
 		(effects
 			(font
 				(size 1.27 1.27)

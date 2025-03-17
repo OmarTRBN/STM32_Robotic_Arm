@@ -22,9 +22,10 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "CommandProtocol.h"
-#include "AS5600_Multi.h"
 #include "StepMotor.h"
 #include "Timing.h"
+#include "AS5600_Mux.h"
+#include "lut.h"
 
 #include "PID_Control.h"
 /* USER CODE END Includes */
@@ -47,7 +48,8 @@
 /* Private variables ---------------------------------------------------------*/
 I2C_HandleTypeDef hi2c1;
 
-TIM_HandleTypeDef htim1;
+TIM_HandleTypeDef htim5;
+TIM_HandleTypeDef htim9;
 TIM_HandleTypeDef htim11;
 
 UART_HandleTypeDef huart1;
@@ -56,24 +58,24 @@ UART_HandleTypeDef huart1;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 char globalDataArray[1100];
 volatile uint8_t globalControllerFlag = 0;
-int statusCheck = 0;
+volatile HAL_StatusTypeDef statusCheck = 0;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 CommandProtocol_Handle cmdHandle;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-AS5600_HandleTypeDef as5600;
-uint16_t angle = 2048;
+AS5600_Mux_Array sensors;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 StepMotor l1_motor;
+StepMotor l2_motor;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-float32_t Kp[NUM_JOINTS*NUM_JOINTS] = { 4.2, 0.0, 0.0, 0.0,
-										0.0, 3.2, 0.0, 0.0,
+float32_t Kp[NUM_JOINTS*NUM_JOINTS] = { 50.0, 0.0, 0.0, 0.0,
+										0.0, 50.0, 0.0, 0.0,
 					  	  	  	  	    0.0, 0.0, 0.0, 0.0,
 										0.0, 0.0, 0.0, 0.0 };
-float32_t Ki[NUM_JOINTS*NUM_JOINTS] = { 4.3, 0.0, 0.0, 0.0,
-										0.0, 3.2, 0.0, 0.0,
+float32_t Ki[NUM_JOINTS*NUM_JOINTS] = { 0.0, 0.0, 0.0, 0.0,
+										0.0, 0.0, 0.0, 0.0,
 										0.0, 0.0, 0.0, 0.0,
 										0.0, 0.0, 0.0, 0.0 };
-float32_t Kd[NUM_JOINTS*NUM_JOINTS] = { 0.4, 0.0, 0.0, 0.0,
+float32_t Kd[NUM_JOINTS*NUM_JOINTS] = { 0.0, 0.0, 0.0, 0.0,
 										0.0, 0.0, 0.0, 0.0,
 										0.0, 0.0, 0.0, 0.0,
 										0.0, 0.0, 0.0, 0.0 };
@@ -88,8 +90,9 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_I2C1_Init(void);
-static void MX_TIM1_Init(void);
 static void MX_TIM11_Init(void);
+static void MX_TIM5_Init(void);
+static void MX_TIM9_Init(void);
 /* USER CODE BEGIN PFP */
 void MyProcessCommand(CommandProtocol_Handle* handle);
 void ControllerToMotors(StepMotor* motor, float rawOutput);
@@ -108,7 +111,7 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	CommandProtocol_SetCommandProcessor(MyProcessCommand);
+  CommandProtocol_SetCommandProcessor(MyProcessCommand);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -131,17 +134,23 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
   MX_I2C1_Init();
-  MX_TIM1_Init();
   MX_TIM11_Init();
+  MX_TIM5_Init();
+  MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
+  statusCheck = AS5600_Mux_Init(&sensors, &hi2c1, 2);
+
   statusCheck = CommandProtocol_Init(&cmdHandle, &huart1, 100);
 
-  statusCheck = AS5600_Init(&as5600, &hi2c1);
+  statusCheck = StepMotor_Init(&l1_motor, &htim5, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin);
+  statusCheck = StepMotor_Init(&l2_motor, &htim9, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin);
 
-  statusCheck = StepMotor_Init(&l1_motor, &htim1, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin);
   StepMotor_SetSpeedLUT(&l1_motor, 0); // Set motor speed to 0 Initially
+  StepMotor_SetSpeedLUT(&l2_motor, 0); // Set motor speed to 0 Initially
 
   MultivariablePID_Init(&pidObj, Kp, Ki, Kd);
+
+  uint32_t lastTime = 0; uint32_t interval = 4;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -158,20 +167,21 @@ int main(void)
 		  float controller_dt = DWT_GetDeltaTime();
 		  pidObj.dt = (float32_t)controller_dt;
 
+		  MultivariablePID_SetSetpoint(&pidObj, q_set);
 		  MultivariablePID_Compute(&pidObj, q_meas);
+
+		  StepMotor_SetSpeedLUT(&l1_motor, pidObj.output_data[0]);
+//		  StepMotor_SetSpeedLUT(&l2_motor, pidObj.output_data[1]);
 	  }
-//	  statusCheck = AS5600_ReadAngle(&as5600, &angle);
-//
-//	  if (statusCheck != HAL_OK)
-//	  {
-//		  CommandProtocol_SendResponse(&cmdHandle, "AS5600 reading gone wrong!\n");
-//	  }
-//	  else
-//	  {
-//		  q_meas[0] = (float)angle;
-//	  }
-//
-//	  ControllerToMotors(&l1_motor, pidObj.output_data[0]);
+
+	  if (HAL_GetTick() - lastTime > interval)
+	  {
+		  AS5600_Mux_ReadAllAngles(&sensors);
+		  for (uint8_t i = 0; i < sensors.num_sensors; i++) {
+			  q_meas[i] = sensors.angles[i];
+		  }
+		  lastTime = HAL_GetTick();
+	  }
   }
   /* USER CODE END 3 */
 }
@@ -237,7 +247,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.ClockSpeed = 400000;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -256,78 +266,115 @@ static void MX_I2C1_Init(void)
 }
 
 /**
-  * @brief TIM1 Initialization Function
+  * @brief TIM5 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_TIM1_Init(void)
+static void MX_TIM5_Init(void)
 {
 
-  /* USER CODE BEGIN TIM1_Init 0 */
+  /* USER CODE BEGIN TIM5_Init 0 */
 
-  /* USER CODE END TIM1_Init 0 */
+  /* USER CODE END TIM5_Init 0 */
 
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
   TIM_OC_InitTypeDef sConfigOC = {0};
-  TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
 
-  /* USER CODE BEGIN TIM1_Init 1 */
+  /* USER CODE BEGIN TIM5_Init 1 */
 
-  /* USER CODE END TIM1_Init 1 */
-  htim1.Instance = TIM1;
-  htim1.Init.Prescaler = 65535;
-  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim1.Init.Period = 65535;
-  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim1.Init.RepetitionCounter = 0;
-  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  /* USER CODE END TIM5_Init 1 */
+  htim5.Instance = TIM5;
+  htim5.Init.Prescaler = 65535;
+  htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim5.Init.Period = 65535;
+  htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
   {
     Error_Handler();
   }
   sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
-  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  if (HAL_TIM_ConfigClockSource(&htim5, &sClockSourceConfig) != HAL_OK)
   {
     Error_Handler();
   }
-  if (HAL_TIM_OC_Init(&htim1) != HAL_OK)
+  if (HAL_TIM_OC_Init(&htim5) != HAL_OK)
   {
     Error_Handler();
   }
   sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
   sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
-  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim5, &sMasterConfig) != HAL_OK)
   {
     Error_Handler();
   }
   sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
   sConfigOC.Pulse = 0;
   sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
-  sConfigOC.OCNPolarity = TIM_OCNPOLARITY_HIGH;
   sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
-  sConfigOC.OCIdleState = TIM_OCIDLESTATE_RESET;
-  sConfigOC.OCNIdleState = TIM_OCNIDLESTATE_RESET;
-  if (HAL_TIM_OC_ConfigChannel(&htim1, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  if (HAL_TIM_OC_ConfigChannel(&htim5, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
   {
     Error_Handler();
   }
-  __HAL_TIM_ENABLE_OCxPRELOAD(&htim1, TIM_CHANNEL_1);
-  sBreakDeadTimeConfig.OffStateRunMode = TIM_OSSR_DISABLE;
-  sBreakDeadTimeConfig.OffStateIDLEMode = TIM_OSSI_DISABLE;
-  sBreakDeadTimeConfig.LockLevel = TIM_LOCKLEVEL_OFF;
-  sBreakDeadTimeConfig.DeadTime = 0;
-  sBreakDeadTimeConfig.BreakState = TIM_BREAK_DISABLE;
-  sBreakDeadTimeConfig.BreakPolarity = TIM_BREAKPOLARITY_HIGH;
-  sBreakDeadTimeConfig.AutomaticOutput = TIM_AUTOMATICOUTPUT_DISABLE;
-  if (HAL_TIMEx_ConfigBreakDeadTime(&htim1, &sBreakDeadTimeConfig) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN TIM1_Init 2 */
+  __HAL_TIM_ENABLE_OCxPRELOAD(&htim5, TIM_CHANNEL_1);
+  /* USER CODE BEGIN TIM5_Init 2 */
 
-  /* USER CODE END TIM1_Init 2 */
-  HAL_TIM_MspPostInit(&htim1);
+  /* USER CODE END TIM5_Init 2 */
+  HAL_TIM_MspPostInit(&htim5);
+
+}
+
+/**
+  * @brief TIM9 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM9_Init(void)
+{
+
+  /* USER CODE BEGIN TIM9_Init 0 */
+
+  /* USER CODE END TIM9_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
+
+  /* USER CODE BEGIN TIM9_Init 1 */
+
+  /* USER CODE END TIM9_Init 1 */
+  htim9.Instance = TIM9;
+  htim9.Init.Prescaler = 65535;
+  htim9.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim9.Init.Period = 65535;
+  htim9.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim9.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
+  if (HAL_TIM_Base_Init(&htim9) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim9, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_OC_Init(&htim9) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_TOGGLE;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_OC_ConfigChannel(&htim9, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  __HAL_TIM_ENABLE_OCxPRELOAD(&htim9, TIM_CHANNEL_1);
+  /* USER CODE BEGIN TIM9_Init 2 */
+
+  /* USER CODE END TIM9_Init 2 */
+  HAL_TIM_MspPostInit(&htim9);
 
 }
 
@@ -347,11 +394,11 @@ static void MX_TIM11_Init(void)
 
   /* USER CODE END TIM11_Init 1 */
   htim11.Instance = TIM11;
-  htim11.Init.Prescaler = 0;
+  htim11.Init.Prescaler = 5000-1;
   htim11.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim11.Init.Period = 65535;
+  htim11.Init.Period = 100-1;
   htim11.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-  htim11.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  htim11.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim11) != HAL_OK)
   {
     Error_Handler();
@@ -413,62 +460,54 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOC, TEST_LED_Pin|GPIO_PIN_14|M1_DIR_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOC, TEST_LED_Pin|M1_DIR_Pin|M1_EN_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(M1_EN_GPIO_Port, M1_EN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, M2_DIR_Pin|M2_EN_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pins : TEST_LED_Pin PC14 */
-  GPIO_InitStruct.Pin = TEST_LED_Pin|GPIO_PIN_14;
+  /*Configure GPIO pins : TEST_LED_Pin M1_DIR_Pin */
+  GPIO_InitStruct.Pin = TEST_LED_Pin|M1_DIR_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : M1_DIR_Pin */
-  GPIO_InitStruct.Pin = M1_DIR_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(M1_DIR_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PA0 */
-  GPIO_InitStruct.Pin = GPIO_PIN_0;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF2_TIM5;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : PA2 */
-  GPIO_InitStruct.Pin = GPIO_PIN_2;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF3_TIM9;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
   /*Configure GPIO pin : M1_EN_Pin */
   GPIO_InitStruct.Pin = M1_EN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(M1_EN_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA5 */
-  GPIO_InitStruct.Pin = GPIO_PIN_5;
-  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  /*Configure GPIO pins : M2_DIR_Pin M2_EN_Pin */
+  GPIO_InitStruct.Pin = M2_DIR_Pin|M2_EN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PA6 */
-  GPIO_InitStruct.Pin = GPIO_PIN_6;
+  /*Configure GPIO pins : PB0 PB1 PB4 PB5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_4|GPIO_PIN_5;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   GPIO_InitStruct.Alternate = GPIO_AF2_TIM3;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA11 */
+  GPIO_InitStruct.Pin = GPIO_PIN_11;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF1_TIM1;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA15 */
+  GPIO_InitStruct.Pin = GPIO_PIN_15;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : PB8 */
@@ -510,7 +549,7 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
 
         case CMD_AS5600_DATA:
             // Direct access to your global as5600Sensor
-            sprintf(response, "AS5600 Angle: %d\n", angle);
+            sprintf(response, "AS5600 Angles: %d, %d\n", sensors.angles[0], sensors.angles[1]);
             CommandProtocol_SendResponse(handle, response);
             break;
 
@@ -519,7 +558,7 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
             if(handle->rxIndex > 1)
             {
                 uint16_t freq = atoi((const char*)&handle->rxBuffer[2]);
-				StepMotor_SetSpeedLUT(&l1_motor, freq);
+				StepMotor_SetSpeedLUT(&l2_motor, freq);
 				sprintf(response, "Frequency set to: %d\n", freq);
 				CommandProtocol_SendResponse(handle, response);
             }
@@ -547,13 +586,32 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
 {
-    if (htim->Instance == TIM11) // Controller timer
+    if (htim->Instance == TIM11)
     {
-    	// Replace this with multi sensor reading
-//    	statusCheck = AS5600_ReadAngle(&as5600, &angle);
     	globalControllerFlag = 1;
     }
 }
+
+//void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
+//{
+//  if (hi2c->Instance == I2C1) {
+//	  AS5600_Mux_I2C_TxCpltCallback(&sensors);
+//  }
+//}
+//
+//void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
+//{
+//    if (hi2c->Instance == I2C1) {
+//    	AS5600_Mux_I2C_RxCpltCallback(&sensors);
+//    }
+//}
+//
+//void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
+//{
+//  if (hi2c->Instance == I2C1) {
+//	  AS5600_Mux_I2C_ErrorCallback(&sensors);
+//  }
+//}
 /* USER CODE END 4 */
 
 /**

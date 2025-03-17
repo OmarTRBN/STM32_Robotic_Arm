@@ -31,7 +31,7 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -61,12 +61,14 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define TEST_LED_Pin GPIO_PIN_13
 #define TEST_LED_GPIO_Port GPIOC
-#define M1_DIR_Pin GPIO_PIN_15
+#define M1_DIR_Pin GPIO_PIN_14
 #define M1_DIR_GPIO_Port GPIOC
-#define M1_EN_Pin GPIO_PIN_3
-#define M1_EN_GPIO_Port GPIOA
-#define M1_STEP_Pin GPIO_PIN_8
-#define M1_STEP_GPIO_Port GPIOA
+#define M1_EN_Pin GPIO_PIN_15
+#define M1_EN_GPIO_Port GPIOC
+#define M2_DIR_Pin GPIO_PIN_1
+#define M2_DIR_GPIO_Port GPIOA
+#define M2_EN_Pin GPIO_PIN_3
+#define M2_EN_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

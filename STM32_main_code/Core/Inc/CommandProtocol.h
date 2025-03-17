@@ -14,15 +14,13 @@
 #include <string.h>
 #include <stdbool.h>
 
-#include "AS5600_Multi.h"
-
 #define CMD_TEST_LED	   ( ('A'<<8) | 'A') // "AA"
 #define CMD_SET_PID_PARAMS ( ('C'<<8) | 'C') // "CC"
-#define CMD_SETPOINT       ( ('S'<<8) | 'P')  // "SP"
-#define CMD_KP             ( ('K'<<8) | 'P')  // "KP"
-#define CMD_KD             ( ('K'<<8) | 'D')  // "KD"
-#define CMD_AS5600_DATA  0x4142  // "AB"
-#define CMD_STEP_FREQ    0x4143  // "AC"
+#define CMD_SETPOINT       ( ('S'<<8) | 'P') // "SP"
+#define CMD_KP             ( ('K'<<8) | 'P') // "KP"
+#define CMD_KD             ( ('K'<<8) | 'D') // "KD"
+#define CMD_AS5600_DATA    ( ('A'<<8) | 'B') // "AB"
+#define CMD_STEP_FREQ      ( ('A'<<8) | 'C') // "AC"
 
 typedef struct {
 	UART_HandleTypeDef* huart;

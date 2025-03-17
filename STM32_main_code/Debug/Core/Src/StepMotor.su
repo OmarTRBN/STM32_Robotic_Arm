@@ -1,4 +1,4 @@
-../Core/Src/StepMotor.c:10:19:StepMotor_Init	0	static
-../Core/Src/StepMotor.c:19:6:StepMotor_SetSpeedLUT	16	static
-../Core/Src/StepMotor.c:55:6:StepMotor_Stop	8	static
-../Core/Src/StepMotor.c:60:6:StepMotor_Start	0	static
+../Core/Src/StepMotor.c:11:19:StepMotor_Init	8	static
+../Core/Src/StepMotor.c:22:6:StepMotor_SetSpeedLUT	16	static
+../Core/Src/StepMotor.c:74:6:StepMotor_Stop	8	static
+../Core/Src/StepMotor.c:79:6:StepMotor_Start	0	static

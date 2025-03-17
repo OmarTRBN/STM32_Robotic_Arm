@@ -11,6 +11,9 @@
 #include "main.h"
 #include "arm_math.h"
 
+#define SETPOINT_MIN 1100.0f
+#define SETPOINT_MAX 3000.0f
+
 typedef struct {
 	float32_t Kp_data[NUM_JOINTS*NUM_JOINTS];
 	float32_t Ki_data[NUM_JOINTS*NUM_JOINTS];
@@ -37,6 +40,10 @@ typedef struct {
     float32_t temp2_N_1_data[NUM_JOINTS];
     arm_matrix_instance_f32 temp1_N_1_mat;   // Temporary Nx1 matrix for calculations
 	arm_matrix_instance_f32 temp2_N_1_mat;  // Second temporary Nx1 matrix
+
+    // Inversion vector to multiply outputs by 1 or -1
+    float32_t invert_data[NUM_JOINTS];      // Array holding 1 or -1 for each joint
+    arm_matrix_instance_f32 invert_mat;     // Matrix form of inversion array
 
     float32_t dt;                  // Sample time in seconds
 } MultivariablePID;
