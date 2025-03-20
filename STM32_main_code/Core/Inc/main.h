@@ -33,11 +33,23 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 #include "arm_math.h"
-
+#include <stdlib.h>
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+#define CMD_TEST_LED	        ( ('T'<<8) | 'L') // "TL"
+#define CMD_STEP_MOTOR_STATE 	( ('M'<<8) | 'S') // "MS"
+#define CMD_SET_PARAM			( ('C'<<8) | 'P') // "CP"
+
+#define CMD_SET_KP              ( ('K'<<8) | 'P') // "KP"
+#define CMD_SET_KI              ( ('K'<<8) | 'I') // "KI"
+#define CMD_SET_KD              ( ('K'<<8) | 'D') // "KD"
+
+
+#define CMD_AS5600_DATA    ( ('A'<<8) | 'B') // "AB"
+#define CMD_STEP_FREQ      ( ('A'<<8) | 'C') // "AC"
+#define CMD_SETPOINT       ( ('S'<<8) | 'P') // "SP"
 
 /* USER CODE END ET */
 

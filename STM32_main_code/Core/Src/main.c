@@ -68,18 +68,6 @@ StepMotor l1_motor;
 StepMotor l2_motor;
 StepMotor* motorArray[NUM_JOINTS];
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-float32_t Kp[NUM_JOINTS*NUM_JOINTS] = { 50.0, 0.0, 0.0, 0.0,
-										0.0, 50.0, 0.0, 0.0,
-					  	  	  	  	    0.0, 0.0, 0.0, 0.0,
-										0.0, 0.0, 0.0, 0.0 };
-float32_t Ki[NUM_JOINTS*NUM_JOINTS] = { 0.0, 0.0, 0.0, 0.0,
-										0.0, 0.0, 0.0, 0.0,
-										0.0, 0.0, 0.0, 0.0,
-										0.0, 0.0, 0.0, 0.0 };
-float32_t Kd[NUM_JOINTS*NUM_JOINTS] = { 0.0, 0.0, 0.0, 0.0,
-										0.0, 0.0, 0.0, 0.0,
-										0.0, 0.0, 0.0, 0.0,
-										0.0, 0.0, 0.0, 0.0 };
 float32_t q_set[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
 float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
 MultivariablePID pidObj;
@@ -145,8 +133,7 @@ int main(void)
 
   setup_motors();
 
-
-  MultivariablePID_Init(&pidObj, Kp, Ki, Kd);
+  MultivariablePID_Init(&pidObj);
 
   volatile uint32_t lastTime = 0; uint32_t interval = 4;
   /* USER CODE END 2 */
@@ -551,21 +538,22 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
 			sprintf(response, "Motor %d is at state %c\n", index, state);
 			CommandProtocol_SendResponse(handle, response);
 			break;
-        case CMD_SET_KP:
-        	sprintf(globalDataArray, "Kp:%s\n", &handle->rxBuffer[2]);
-        	CommandProtocol_SendResponse(handle, globalDataArray);
-        	// Implement parsing function.
-        	break;
-        case CMD_SET_KI:
-			sprintf(globalDataArray, "Ki:%s\n", &handle->rxBuffer[2]);
+        case CMD_SET_PARAM:
+			char paramType[3] = {handle->rxBuffer[2], handle->rxBuffer[3], '\0'};
+
+			sprintf(globalDataArray, "%s%s", paramType, &handle->rxBuffer[4]);
 			CommandProtocol_SendResponse(handle, globalDataArray);
-			// Implement parsing function.
+
+			if (ParsePIDParametersFromUART(&pidObj, globalDataArray, strlen(globalDataArray))) {
+				sprintf(response, " PID %s parameters updated successfully\n", paramType);
+				CommandProtocol_SendResponse(handle, response);
+			}
+			else {
+				sprintf(response, "Error: Failed to parse PID %s parameters\n", paramType);
+				CommandProtocol_SendResponse(handle, response);
+			}
 			break;
-        case CMD_SET_KD:
-			sprintf(globalDataArray, "Kd:%s\n", &handle->rxBuffer[2]);
-			CommandProtocol_SendResponse(handle, globalDataArray);
-			// Implement parsing function.
-			break;
+
         case CMD_AS5600_DATA:
             // Direct access to your global as5600Sensor
             sprintf(response, "AS5600 Angles: %d, %d\n", sensors.angles[0], sensors.angles[1]);
@@ -606,7 +594,6 @@ void setup_motors() {
 
     StepMotor_SetSpeedLUT(&l1_motor, 0); // Set motor speed to 0 Initially
     StepMotor_SetSpeedLUT(&l2_motor, 0); // Set motor speed to 0 Initially
-
 }
 /* USER CODE END 4 */
 

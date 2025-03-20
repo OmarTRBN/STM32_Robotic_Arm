@@ -1,3 +1,5 @@
-../Core/Controllers/PID_Control.c:10:6:MultivariablePID_Init	1
-../Core/Controllers/PID_Control.c:53:6:MultivariablePID_SetSetpoint	3
-../Core/Controllers/PID_Control.c:68:6:MultivariablePID_Compute	3
+../Core/Controllers/PID_Control.c:15:6:MultivariablePID_Init	1
+../Core/Controllers/PID_Control.c:58:6:MultivariablePID_SetSetpoint	3
+../Core/Controllers/PID_Control.c:73:6:MultivariablePID_Compute	3
+../Core/Controllers/PID_Control.c:115:6:MultivariablePID_SetParameter	6
+../Core/Controllers/PID_Control.c:143:9:ParsePIDParametersFromUART	17

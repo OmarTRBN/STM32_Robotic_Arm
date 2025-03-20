@@ -48,9 +48,13 @@ typedef struct {
     float32_t dt;                  // Sample time in seconds
 } MultivariablePID;
 
-void MultivariablePID_Init(MultivariablePID *pid, float32_t *Kp_f32, float32_t *Ki_f32, float32_t *Kd_f32);
+void MultivariablePID_Init(MultivariablePID *pid);
 void MultivariablePID_SetSetpoint(MultivariablePID *pid, float32_t *setpoint);
 void MultivariablePID_Compute(MultivariablePID *pid, float32_t *meas);
+void MultivariablePID_SetParameter(MultivariablePID *pid, float32_t *new_matrix, uint16_t chosen_param);
+
+uint8_t ParsePIDParametersFromUART(MultivariablePID *pid, char *uart_str, uint16_t len);
+
 void MultivariablePID_Reset(MultivariablePID *pid);
 
 #endif /* CONTROLLERS_PID_CONTROL_H_ */

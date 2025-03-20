@@ -1,7 +1,7 @@
-../Core/Src/main.c:532:6:MyProcessCommand	9
-../Core/Src/main.c:191:6:SystemClock_Config	3
-../Core/Src/main.c:583:6:HAL_UART_RxCpltCallback	2
-../Core/Src/main.c:592:6:HAL_TIM_PeriodElapsedCallback	2
-../Core/Src/main.c:600:6:setup_motors	1
-../Core/Src/main.c:111:5:main	16
-../Core/Src/main.c:619:6:Error_Handler	1
+../Core/Src/main.c:519:6:MyProcessCommand	8
+../Core/Src/main.c:178:6:SystemClock_Config	3
+../Core/Src/main.c:569:6:HAL_UART_RxCpltCallback	2
+../Core/Src/main.c:578:6:HAL_TIM_PeriodElapsedCallback	2
+../Core/Src/main.c:586:6:setup_motors	1
+../Core/Src/main.c:99:5:main	16
+../Core/Src/main.c:604:6:Error_Handler	1

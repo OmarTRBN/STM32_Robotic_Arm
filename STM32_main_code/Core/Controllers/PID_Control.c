@@ -7,11 +7,16 @@
 
 #include "PID_Control.h"
 
-void MultivariablePID_Init(MultivariablePID *pid, float32_t *Kp_f32, float32_t *Ki_f32, float32_t *Kd_f32) {
+#define CMD_PREFIX_KP "KP"
+#define CMD_PREFIX_KI "KI"
+#define CMD_PREFIX_KD "KD"
+#define MAX_UART_BUFFER 1500
+
+void MultivariablePID_Init(MultivariablePID *pid) {
 	for (int i = 0; i < NUM_JOINTS*NUM_JOINTS; i++) {
-		pid->Kp_data[i] = Kp_f32[i];
-		pid->Ki_data[i] = Ki_f32[i];
-		pid->Kd_data[i] = Kd_f32[i];
+		pid->Kp_data[i] = 0;
+		pid->Ki_data[i] = 0;
+		pid->Kd_data[i] = 0;
 	}
 
 	arm_mat_init_f32(&(pid->Kp_mat), NUM_JOINTS, NUM_JOINTS, pid->Kp_data);
@@ -106,6 +111,96 @@ void MultivariablePID_Compute(MultivariablePID *pid, float32_t *meas) {
   // Save the current error as the previous error for the next iteration
   arm_copy_f32(pid->error_data, pid->error_prev_data, NUM_JOINTS);
 }
+
+void MultivariablePID_SetParameter(MultivariablePID *pid, float32_t *new_matrix, uint16_t chosen_param) {
+    if (pid == NULL || new_matrix == NULL) return;
+
+    float32_t *target_data = NULL;
+    // Select the appropriate matrix based on the chosen parameter
+    switch (chosen_param) {
+        case CMD_SET_KP:
+            target_data = pid->Kp_data;
+            break;
+
+        case CMD_SET_KI:
+            target_data = pid->Ki_data;
+            break;
+
+        case CMD_SET_KD:
+            target_data = pid->Kd_data;
+            break;
+
+        default:
+            // Invalid parameter choice
+            return;
+    }
+
+    // Copy new values to the selected data array
+    arm_copy_f32(new_matrix, target_data, NUM_JOINTS*NUM_JOINTS);
+    // No need to re-initialize the matrix as the data pointer remains the same
+}
+
+uint8_t ParsePIDParametersFromUART(MultivariablePID *pid, char *uart_str, uint16_t len) {
+    if (pid == NULL || uart_str == NULL || len == 0) return 0;
+
+    // Make sure the string is null-terminated
+    if (uart_str[len-1] != '\0') {
+        if (len >= MAX_UART_BUFFER) {
+            // String too long, can't safely null-terminate
+            return 0;
+        }
+        uart_str[len] = '\0';
+    }
+
+    // Temporary buffer for the parameter values
+    float32_t parsed_values[NUM_JOINTS*NUM_JOINTS];
+
+    // Initialize values to zero
+    for (int i = 0; i < NUM_JOINTS*NUM_JOINTS; i++) {
+        parsed_values[i] = 0.0f;
+    }
+
+    // Determine which parameter is being updated
+    uint16_t chosen_param;
+    char *data_start = NULL;
+
+    if (strncmp(uart_str, "KP", 2) == 0) {
+        chosen_param = CMD_SET_KP;
+        data_start = uart_str + 2;
+    } else if (strncmp(uart_str, "KI", 2) == 0) {
+        chosen_param = CMD_SET_KI;
+        data_start = uart_str + 2;
+    } else if (strncmp(uart_str, "KD", 2) == 0) {
+        chosen_param = CMD_SET_KD;
+        data_start = uart_str + 2;
+    } else {
+        // Unrecognized parameter
+        return 0;
+    }
+
+    // Parse the comma-separated values
+    char *token;
+    char *rest = data_start;
+    int index = 0;
+
+    while ((token = strtok_r(rest, ",", &rest)) != NULL && index < NUM_JOINTS*NUM_JOINTS) {
+        // Convert the token to float
+        parsed_values[index] = (float32_t)atof(token);
+        index++;
+    }
+
+    // Check if we received the expected number of values
+    if (index != NUM_JOINTS*NUM_JOINTS) {
+        // Invalid number of parameters
+        return 0;
+    }
+
+    // Update the PID parameters
+    MultivariablePID_SetParameter(pid, parsed_values, chosen_param);
+
+    return 1;
+}
+
 
 
 

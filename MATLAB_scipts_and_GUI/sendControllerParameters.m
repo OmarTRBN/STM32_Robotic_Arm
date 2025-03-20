@@ -4,7 +4,7 @@ function sendControllerParameters(serialObj, params, prefix)
         warning('Serial port is not open or invalid');
         return;
     end
-    
+
     % Validate matrix dimensions
     if ~isequal(size(params), [4, 4]) 
         warning('Parameters matrix must be 4x4');
@@ -14,8 +14,8 @@ function sendControllerParameters(serialObj, params, prefix)
     % Format matrices for STM32 parsing
     % Convert to flat array with comma separation
     param_str = matrixToFlatString(params);
-    pid_msg = [prefix, param_str];
-    
+    pid_msg = ['CP', prefix, param_str];
+
     try
         % Send data through serial port
         writeline(serialObj, pid_msg);
