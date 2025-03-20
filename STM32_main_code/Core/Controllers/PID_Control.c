@@ -44,7 +44,7 @@ void MultivariablePID_Init(MultivariablePID *pid, float32_t *Kp_f32, float32_t *
 	arm_mat_init_f32(&(pid->temp2_N_1_mat), NUM_JOINTS, 1, pid->temp2_N_1_data);
 
 	pid->invert_data[0] = 1.0f;
-	pid->invert_data[1] = -1.0f;
+	pid->invert_data[1] = 1.0f;
 	pid->invert_data[2] = 1.0f;
 	pid->invert_data[3] = -1.0f;
 	arm_mat_init_f32(&(pid->invert_mat), NUM_JOINTS, 1, pid->invert_data);
@@ -101,7 +101,7 @@ void MultivariablePID_Compute(MultivariablePID *pid, float32_t *meas) {
   arm_scale_f32(pid->output_data, output_scale_factor, pid->output_data, NUM_JOINTS);
 
   // Apply the inversion to the output (multiply each output by its corresponding inversion value)
-  arm_mult_f32(pid->output_data, pid->invert_data, pid->output_data, NUM_JOINTS);
+  //  arm_mult_f32(pid->output_data, pid->invert_data, pid->output_data, NUM_JOINTS);
 
   // Save the current error as the previous error for the next iteration
   arm_copy_f32(pid->error_data, pid->error_prev_data, NUM_JOINTS);

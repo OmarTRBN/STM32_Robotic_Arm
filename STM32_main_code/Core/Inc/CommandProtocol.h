@@ -14,13 +14,16 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define CMD_TEST_LED	   ( ('A'<<8) | 'A') // "AA"
-#define CMD_SET_PID_PARAMS ( ('C'<<8) | 'C') // "CC"
-#define CMD_SETPOINT       ( ('S'<<8) | 'P') // "SP"
-#define CMD_KP             ( ('K'<<8) | 'P') // "KP"
-#define CMD_KD             ( ('K'<<8) | 'D') // "KD"
+#define CMD_TEST_LED	        ( ('T'<<8) | 'L') // "TL"
+#define CMD_STEP_MOTOR_STATE 	( ('M'<<8) | 'S') // "MS"
+#define CMD_SET_KP              ( ('K'<<8) | 'P') // "KP"
+#define CMD_SET_KI              ( ('K'<<8) | 'I') // "KI"
+#define CMD_SET_KD              ( ('K'<<8) | 'D') // "KD"
+
+
 #define CMD_AS5600_DATA    ( ('A'<<8) | 'B') // "AB"
 #define CMD_STEP_FREQ      ( ('A'<<8) | 'C') // "AC"
+#define CMD_SETPOINT       ( ('S'<<8) | 'P') // "SP"
 
 typedef struct {
 	UART_HandleTypeDef* huart;

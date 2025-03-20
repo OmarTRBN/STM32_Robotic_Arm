@@ -1,7 +1,7 @@
-../Core/Src/main.c:534:6:MyProcessCommand	72	static
-../Core/Src/main.c:193:6:SystemClock_Config	88	static,ignoring_inline_asm
-../Core/Src/main.c:110:5:main	112	static,ignoring_inline_asm
-../Core/Src/main.c:573:6:ControllerToMotors	0	static
-../Core/Src/main.c:578:6:HAL_UART_RxCpltCallback	16	static
-../Core/Src/main.c:587:6:HAL_TIM_PeriodElapsedCallback	0	static
-../Core/Src/main.c:621:6:Error_Handler	0	static,ignoring_inline_asm
+../Core/Src/main.c:532:6:MyProcessCommand	72	static
+../Core/Src/main.c:191:6:SystemClock_Config	88	static,ignoring_inline_asm
+../Core/Src/main.c:583:6:HAL_UART_RxCpltCallback	16	static
+../Core/Src/main.c:592:6:HAL_TIM_PeriodElapsedCallback	0	static
+../Core/Src/main.c:600:6:setup_motors	32	static
+../Core/Src/main.c:111:5:main	104	static,ignoring_inline_asm
+../Core/Src/main.c:619:6:Error_Handler	0	static,ignoring_inline_asm

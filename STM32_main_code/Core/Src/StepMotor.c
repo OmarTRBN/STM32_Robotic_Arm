@@ -8,14 +8,26 @@
 #include "StepMotor.h"
 #include "lut.h"
 
-HAL_StatusTypeDef StepMotor_Init(StepMotor* motor, TIM_HandleTypeDef* timer, uint32_t tim_channel, GPIO_TypeDef* gpio_port, uint16_t gpio_pin){
-	motor->timer = timer;
+HAL_StatusTypeDef StepMotor_Init(StepMotor* motor,
+								 TIM_HandleTypeDef* tim,
+								 uint32_t tim_channel,
+								 GPIO_TypeDef* dir_port,
+								 uint16_t dir_pin,
+								 GPIO_TypeDef* en_port,
+								 uint16_t en_pin) {
+	motor->timer = tim;
 	motor->channel = tim_channel;
-	motor->dir_gpio_port = gpio_port;
-	motor->dir_gpio_pin = gpio_pin;
+
+	motor->dir_gpio_port = dir_port;
+	motor->dir_gpio_pin = dir_pin;
+	motor->en_gpio_port = en_port;
+	motor->en_gpio_pin = en_pin;
+
 	motor->last_speed = 0;
 
-	HAL_GPIO_WritePin(gpio_port, gpio_pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(dir_port, dir_pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(en_port, en_pin, GPIO_PIN_RESET);
+
 	return HAL_TIM_OC_Start(motor->timer, motor->channel);
 }
 
@@ -70,13 +82,32 @@ void StepMotor_SetSpeedLUT(StepMotor* motor, int16_t speed) {
 		return;
 	}
 }
-
-void StepMotor_Stop(StepMotor* motor) {
+void StepMotor_Enable(StepMotor* motor) {
+    HAL_GPIO_WritePin(motor->en_gpio_port, motor->en_gpio_pin, GPIO_PIN_RESET);
+    HAL_TIM_OC_Start(motor->timer, motor->channel);
+}
+void StepMotor_Disable(StepMotor* motor) {
+    HAL_GPIO_WritePin(motor->en_gpio_port, motor->en_gpio_pin, GPIO_PIN_SET);
     HAL_TIM_OC_Stop(motor->timer, motor->channel);
     motor->timer->Instance->CNT = 0;
 }
 
-void StepMotor_Start(StepMotor* motor) {
-    HAL_TIM_OC_Start(motor->timer, motor->channel);
+void StepMotor_MultiSetSpeed(StepMotor* motorArray[], float32_t speedArray[], int motorCount) {
+    for (int i = 0; i < motorCount; i++) {
+        StepMotor_SetSpeedLUT(motorArray[i], speedArray[i]);
+    }
 }
+void StepMotor_MultiEnable(StepMotor* motorArray[], int motorCount) {
+    for (int i = 0; i < motorCount; i++) {
+    }
+}
+void StepMotor_MultiDisable(StepMotor* motorArray[], int motorCount) {
+    for (int i = 0; i < motorCount; i++) {
+        StepMotor_Disable(motorArray[i]);
+    }
+}
+
+
+
+
 

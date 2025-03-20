@@ -66,6 +66,7 @@ AS5600_Mux_Array sensors;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 StepMotor l1_motor;
 StepMotor l2_motor;
+StepMotor* motorArray[NUM_JOINTS];
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 float32_t Kp[NUM_JOINTS*NUM_JOINTS] = { 50.0, 0.0, 0.0, 0.0,
 										0.0, 50.0, 0.0, 0.0,
@@ -95,7 +96,7 @@ static void MX_TIM5_Init(void);
 static void MX_TIM9_Init(void);
 /* USER CODE BEGIN PFP */
 void MyProcessCommand(CommandProtocol_Handle* handle);
-void ControllerToMotors(StepMotor* motor, float rawOutput);
+void setup_motors();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -142,15 +143,12 @@ int main(void)
 
   statusCheck = CommandProtocol_Init(&cmdHandle, &huart1, 100);
 
-  statusCheck = StepMotor_Init(&l1_motor, &htim5, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin);
-  statusCheck = StepMotor_Init(&l2_motor, &htim9, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin);
+  setup_motors();
 
-  StepMotor_SetSpeedLUT(&l1_motor, 0); // Set motor speed to 0 Initially
-  StepMotor_SetSpeedLUT(&l2_motor, 0); // Set motor speed to 0 Initially
 
   MultivariablePID_Init(&pidObj, Kp, Ki, Kd);
 
-  uint32_t lastTime = 0; uint32_t interval = 4;
+  volatile uint32_t lastTime = 0; uint32_t interval = 4;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -171,7 +169,7 @@ int main(void)
 		  MultivariablePID_Compute(&pidObj, q_meas);
 
 		  StepMotor_SetSpeedLUT(&l1_motor, pidObj.output_data[0]);
-//		  StepMotor_SetSpeedLUT(&l2_motor, pidObj.output_data[1]);
+		  StepMotor_SetSpeedLUT(&l2_motor, pidObj.output_data[1]);
 	  }
 
 	  if (HAL_GetTick() - lastTime > interval)
@@ -541,38 +539,43 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
             CommandProtocol_SendResponse(handle, "LED TOGGLED!\n");
             HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
             break;
-        case CMD_SET_PID_PARAMS:
-        	sprintf(globalDataArray, "PID:%s\n", &handle->rxBuffer[2]);
+        case CMD_STEP_MOTOR_STATE:
+			int index = handle->rxBuffer[2] - '0'; // Convert char to int by subtracting '0'
+			char state = handle->rxBuffer[3];
+			if (state == '1') {
+				StepMotor_Enable(motorArray[index]);
+			}
+			else {
+				StepMotor_Disable(motorArray[index]);
+			}
+			sprintf(response, "Motor %d is at state %c\n", index, state);
+			CommandProtocol_SendResponse(handle, response);
+			break;
+        case CMD_SET_KP:
+        	sprintf(globalDataArray, "Kp:%s\n", &handle->rxBuffer[2]);
         	CommandProtocol_SendResponse(handle, globalDataArray);
         	// Implement parsing function.
         	break;
-
+        case CMD_SET_KI:
+			sprintf(globalDataArray, "Ki:%s\n", &handle->rxBuffer[2]);
+			CommandProtocol_SendResponse(handle, globalDataArray);
+			// Implement parsing function.
+			break;
+        case CMD_SET_KD:
+			sprintf(globalDataArray, "Kd:%s\n", &handle->rxBuffer[2]);
+			CommandProtocol_SendResponse(handle, globalDataArray);
+			// Implement parsing function.
+			break;
         case CMD_AS5600_DATA:
             // Direct access to your global as5600Sensor
             sprintf(response, "AS5600 Angles: %d, %d\n", sensors.angles[0], sensors.angles[1]);
             CommandProtocol_SendResponse(handle, response);
-            break;
-
-        case CMD_STEP_FREQ:
-            // Direct access to your global stepMotor
-            if(handle->rxIndex > 1)
-            {
-                uint16_t freq = atoi((const char*)&handle->rxBuffer[2]);
-				StepMotor_SetSpeedLUT(&l2_motor, freq);
-				sprintf(response, "Frequency set to: %d\n", freq);
-				CommandProtocol_SendResponse(handle, response);
-            }
             break;
         default:
             sprintf(globalDataArray, "Unknown command: %d\n", encodedCommand);
         	CommandProtocol_SendResponse(handle, globalDataArray);
         	break;
     }
-}
-
-void ControllerToMotors(StepMotor* motor, float rawOutput) {
-	// Apply controller output to motors
-	StepMotor_SetSpeedLUT(motor, pidObj.output_data[0]);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
@@ -592,26 +595,19 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
     }
 }
 
-//void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c)
-//{
-//  if (hi2c->Instance == I2C1) {
-//	  AS5600_Mux_I2C_TxCpltCallback(&sensors);
-//  }
-//}
-//
-//void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
-//{
-//    if (hi2c->Instance == I2C1) {
-//    	AS5600_Mux_I2C_RxCpltCallback(&sensors);
-//    }
-//}
-//
-//void HAL_I2C_ErrorCallback(I2C_HandleTypeDef *hi2c)
-//{
-//  if (hi2c->Instance == I2C1) {
-//	  AS5600_Mux_I2C_ErrorCallback(&sensors);
-//  }
-//}
+void setup_motors() {
+    // Initialize individual motors as you're already doing
+    statusCheck = StepMotor_Init(&l1_motor, &htim5, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin, M1_EN_GPIO_Port, M1_EN_Pin);
+    statusCheck = StepMotor_Init(&l2_motor, &htim9, TIM_CHANNEL_1, M2_DIR_GPIO_Port, M2_DIR_Pin, M2_EN_GPIO_Port, M2_EN_Pin);
+
+    // Set up the motor array
+    motorArray[0] = &l1_motor;
+    motorArray[1] = &l2_motor;
+
+    StepMotor_SetSpeedLUT(&l1_motor, 0); // Set motor speed to 0 Initially
+    StepMotor_SetSpeedLUT(&l2_motor, 0); // Set motor speed to 0 Initially
+
+}
 /* USER CODE END 4 */
 
 /**
