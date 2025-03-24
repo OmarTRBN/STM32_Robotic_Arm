@@ -32,35 +32,40 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
-#include "arm_math.h"
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdbool.h>
+
+#include "arm_math.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-#define CMD_TEST_LED	        ( ('T'<<8) | 'L') // "TL"
-#define CMD_STEP_MOTOR_STATE 	( ('M'<<8) | 'S') // "MS"
-#define CMD_SET_PARAM			( ('C'<<8) | 'P') // "CP"
-
-#define CMD_SET_KP              ( ('K'<<8) | 'P') // "KP"
-#define CMD_SET_KI              ( ('K'<<8) | 'I') // "KI"
-#define CMD_SET_KD              ( ('K'<<8) | 'D') // "KD"
-
+#define CMD_TEST_LED	        ( ('T'<<8) | 'L') // "TL" Test LED
+#define CMD_STEP_MOTOR_STATE 	( ('M'<<8) | 'S') // "MS" Motor State
+#define CMD_SET_PARAM			( ('C'<<8) | 'P') // "CP" Controller Parameters
+#define CMD_SET_TRAJ_COEFF      ( ('T'<<8) | 'C') // "TC" Trajectory Coefficients
 
 #define CMD_AS5600_DATA    ( ('A'<<8) | 'B') // "AB"
-#define CMD_STEP_FREQ      ( ('A'<<8) | 'C') // "AC"
-#define CMD_SETPOINT       ( ('S'<<8) | 'P') // "SP"
 
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+#define AS5600_MAX 4096.0        // 12-bit AS5600 range (0-4095)
+#define RAD_TO_AS5600 (AS5600_MAX / 2.0 * M_PI)
+#define DEG_TO_AS5600 (AS5600_MAX / 360.0)
+#define	AS5600_TO_DEG (360.0 / AS5600_MAX)
+#define AS5600_TO_RAD (2.0 * M_PI / AS5600_MAX)
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 #define NUM_JOINTS 4
+#define NUM_JOINTS_TRAJ 1
+#define TRAJ_POLY_TERMS 6
+#define TRAJ_COEFF_LEN NUM_JOINTS_TRAJ*TRAJ_POLY_TERMS
 /* USER CODE END EM */
 
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *htim);

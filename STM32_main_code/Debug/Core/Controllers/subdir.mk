@@ -5,13 +5,16 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Core/Controllers/PID_Control.c 
+../Core/Controllers/PID_Control.c \
+../Core/Controllers/Trajectory.c 
 
 OBJS += \
-./Core/Controllers/PID_Control.o 
+./Core/Controllers/PID_Control.o \
+./Core/Controllers/Trajectory.o 
 
 C_DEPS += \
-./Core/Controllers/PID_Control.d 
+./Core/Controllers/PID_Control.d \
+./Core/Controllers/Trajectory.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -21,7 +24,7 @@ Core/Controllers/%.o Core/Controllers/%.su Core/Controllers/%.cyclo: ../Core/Con
 clean: clean-Core-2f-Controllers
 
 clean-Core-2f-Controllers:
-	-$(RM) ./Core/Controllers/PID_Control.cyclo ./Core/Controllers/PID_Control.d ./Core/Controllers/PID_Control.o ./Core/Controllers/PID_Control.su
+	-$(RM) ./Core/Controllers/PID_Control.cyclo ./Core/Controllers/PID_Control.d ./Core/Controllers/PID_Control.o ./Core/Controllers/PID_Control.su ./Core/Controllers/Trajectory.cyclo ./Core/Controllers/Trajectory.d ./Core/Controllers/Trajectory.o ./Core/Controllers/Trajectory.su
 
 .PHONY: clean-Core-2f-Controllers
 

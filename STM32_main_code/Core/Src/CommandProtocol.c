@@ -6,7 +6,6 @@
  */
 
 #include "CommandProtocol.h"
-#include "StepMotor.h"
 
 static ProcessCommandFn CustomProcessCommand = NULL;
 

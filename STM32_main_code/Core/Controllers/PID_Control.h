@@ -9,7 +9,6 @@
 #define CONTROLLERS_PID_CONTROL_H_
 
 #include "main.h"
-#include "arm_math.h"
 
 #define SETPOINT_MIN 1100.0f
 #define SETPOINT_MAX 3000.0f

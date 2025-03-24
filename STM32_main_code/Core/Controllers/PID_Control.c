@@ -10,13 +10,17 @@
 #define CMD_PREFIX_KP "KP"
 #define CMD_PREFIX_KI "KI"
 #define CMD_PREFIX_KD "KD"
-#define MAX_UART_BUFFER 1500
+#define CMD_SET_KP              ( ('K'<<8) | 'P') // "KP"
+#define CMD_SET_KI              ( ('K'<<8) | 'I') // "KI"
+#define CMD_SET_KD              ( ('K'<<8) | 'D') // "KD"
+
+#define MAX_UART_BUFFER 800
 
 void MultivariablePID_Init(MultivariablePID *pid) {
 	for (int i = 0; i < NUM_JOINTS*NUM_JOINTS; i++) {
-		pid->Kp_data[i] = 0;
-		pid->Ki_data[i] = 0;
-		pid->Kd_data[i] = 0;
+		pid->Kp_data[i] = 0.0f;
+		pid->Ki_data[i] = 0.0f;
+		pid->Kd_data[i] = 0.0f;
 	}
 
 	arm_mat_init_f32(&(pid->Kp_mat), NUM_JOINTS, NUM_JOINTS, pid->Kp_data);
@@ -152,10 +156,7 @@ uint8_t ParsePIDParametersFromUART(MultivariablePID *pid, char *uart_str, uint16
         uart_str[len] = '\0';
     }
 
-    // Temporary buffer for the parameter values
     float32_t parsed_values[NUM_JOINTS*NUM_JOINTS];
-
-    // Initialize values to zero
     for (int i = 0; i < NUM_JOINTS*NUM_JOINTS; i++) {
         parsed_values[i] = 0.0f;
     }
@@ -166,17 +167,18 @@ uint8_t ParsePIDParametersFromUART(MultivariablePID *pid, char *uart_str, uint16
 
     if (strncmp(uart_str, "KP", 2) == 0) {
         chosen_param = CMD_SET_KP;
-        data_start = uart_str + 2;
-    } else if (strncmp(uart_str, "KI", 2) == 0) {
+    }
+    else if (strncmp(uart_str, "KI", 2) == 0) {
         chosen_param = CMD_SET_KI;
-        data_start = uart_str + 2;
-    } else if (strncmp(uart_str, "KD", 2) == 0) {
+    }
+    else if (strncmp(uart_str, "KD", 2) == 0) {
         chosen_param = CMD_SET_KD;
-        data_start = uart_str + 2;
-    } else {
+    }
+    else {
         // Unrecognized parameter
         return 0;
     }
+    data_start = uart_str + 2;
 
     // Parse the comma-separated values
     char *token;

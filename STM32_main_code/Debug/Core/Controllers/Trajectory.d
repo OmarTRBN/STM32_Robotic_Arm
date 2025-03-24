@@ -1,5 +1,5 @@
-Core/Src/CommandProtocol.o: ../Core/Src/CommandProtocol.c \
- ../Core/Inc/CommandProtocol.h ../Core/Inc/main.h \
+Core/Controllers/Trajectory.o: ../Core/Controllers/Trajectory.c \
+ ../Core/Controllers/Trajectory.h ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
@@ -32,7 +32,7 @@ Core/Src/CommandProtocol.o: ../Core/Src/CommandProtocol.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Middlewares/ST/ARM/DSP/Inc/arm_math.h \
  ../Drivers/CMSIS/Include/cmsis_compiler.h
-../Core/Inc/CommandProtocol.h:
+../Core/Controllers/Trajectory.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:

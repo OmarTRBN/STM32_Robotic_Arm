@@ -28,6 +28,7 @@
 #include "lut.h"
 
 #include "PID_Control.h"
+#include "Trajectory.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -71,6 +72,8 @@ StepMotor* motorArray[NUM_JOINTS];
 float32_t q_set[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
 float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
 MultivariablePID pidObj;
+// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
+Trajectory robotTraj;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 /* USER CODE END PV */
 
@@ -134,6 +137,8 @@ int main(void)
   setup_motors();
 
   MultivariablePID_Init(&pidObj);
+
+  Trajectory_Init(&robotTraj);
 
   volatile uint32_t lastTime = 0; uint32_t interval = 4;
   /* USER CODE END 2 */
@@ -523,12 +528,14 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
 
     switch(encodedCommand) {
         case CMD_TEST_LED:
-            CommandProtocol_SendResponse(handle, "LED TOGGLED!\n");
             HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
+            CommandProtocol_SendResponse(handle, "LED TOGGLED!\n");
             break;
+
         case CMD_STEP_MOTOR_STATE:
 			int index = handle->rxBuffer[2] - '0'; // Convert char to int by subtracting '0'
 			char state = handle->rxBuffer[3];
+
 			if (state == '1') {
 				StepMotor_Enable(motorArray[index]);
 			}
@@ -538,30 +545,42 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
 			sprintf(response, "Motor %d is at state %c\n", index, state);
 			CommandProtocol_SendResponse(handle, response);
 			break;
+
         case CMD_SET_PARAM:
 			char paramType[3] = {handle->rxBuffer[2], handle->rxBuffer[3], '\0'};
+			char *recievedShit = (char *)&handle->rxBuffer[2];
 
-			sprintf(globalDataArray, "%s%s", paramType, &handle->rxBuffer[4]);
-			CommandProtocol_SendResponse(handle, globalDataArray);
-
-			if (ParsePIDParametersFromUART(&pidObj, globalDataArray, strlen(globalDataArray))) {
-				sprintf(response, " PID %s parameters updated successfully\n", paramType);
-				CommandProtocol_SendResponse(handle, response);
+			if (ParsePIDParametersFromUART(&pidObj, recievedShit, strlen(recievedShit))) {
+				sprintf(response, "PID %s parameters updated successfully, %s\n", paramType, &handle->rxBuffer[4]);
 			}
 			else {
 				sprintf(response, "Error: Failed to parse PID %s parameters\n", paramType);
-				CommandProtocol_SendResponse(handle, response);
 			}
+			CommandProtocol_SendResponse(handle, response);
 			break;
 
+        case CMD_SET_TRAJ_COEFF:
+        	float32_t parsed_coeffs[TRAJ_COEFF_LEN];
+
+        	if (Trajectory_ParseCoeffs((const char*)&handle->rxBuffer[2], parsed_coeffs, TRAJ_COEFF_LEN) == HAL_OK) {
+
+        		Trajectory_SetCoefficients(&robotTraj, parsed_coeffs);
+				sprintf(response, "Trajectory coefficients set successfully\n");
+        	}
+        	else {
+				sprintf(response, "Error: Failed to parse trajectory coefficients\n");
+			}
+        	CommandProtocol_SendResponse(handle, response);
+        	break;
+
         case CMD_AS5600_DATA:
-            // Direct access to your global as5600Sensor
             sprintf(response, "AS5600 Angles: %d, %d\n", sensors.angles[0], sensors.angles[1]);
             CommandProtocol_SendResponse(handle, response);
             break;
+
         default:
-            sprintf(globalDataArray, "Unknown command: %d\n", encodedCommand);
-        	CommandProtocol_SendResponse(handle, globalDataArray);
+            sprintf(response, "Unknown command: %d\n", encodedCommand);
+        	CommandProtocol_SendResponse(handle, response);
         	break;
     }
 }

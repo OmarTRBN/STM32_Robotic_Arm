@@ -9,10 +9,6 @@
 #define INC_COMMANDPROTOCOL_H_
 
 #include "main.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
 
 typedef struct {
 	UART_HandleTypeDef* huart;
