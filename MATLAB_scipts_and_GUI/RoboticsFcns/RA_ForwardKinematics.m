@@ -7,7 +7,6 @@ function endTransform = RA_ForwardKinematics(robot, jointAngles, plotRobot)
               length(jointAngles), numJoints);
     end
     
-    % Create a configuration structure with the provided angles
     for i = 1:numJoints
         % Get joint limits for the current joint
         joint = robot.Bodies{i}.Joint;
@@ -21,11 +20,9 @@ function endTransform = RA_ForwardKinematics(robot, jointAngles, plotRobot)
                 % Clamp the angle to the limits
                 clampedAngle = max(limits(1), min(jointAngles(i), limits(2)));
                 
-                % Print message about clamping
                 fprintf('Joint %d angle (%.2f) outside limits [%.2f, %.2f]. Clamped to %.2f\n', ...
                     i, jointAngles(i), limits(1), limits(2), clampedAngle);
                 
-                % Update the angle
                 jointAngles(i) = clampedAngle;
             end
         end
@@ -41,5 +38,13 @@ function endTransform = RA_ForwardKinematics(robot, jointAngles, plotRobot)
         show(robot, config);
         title('Robot Model');
         grid on;
+
+        % ax = gca; % Get current axes
+        % ax.XLim = [-0.5, 0.5]; % Adjust X limits as needed
+        % ax.YLim = [-0.5, 0.5]; % Adjust Y limits as needed
+        % ax.ZLim = [-0.5, 0.5]; % Adjust Z limits as needed
+    
+        % Optional: set equal aspect ratio for better visualization
+        axis equal;
     end
 end

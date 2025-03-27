@@ -1,9 +1,9 @@
 ../Core/Controllers/Trajectory.c:50:6:Trajectory_Init	16	static
-../Core/Controllers/Trajectory.c:79:6:Trajectory_SetCoefficients	0	static
-../Core/Controllers/Trajectory.c:83:6:Trajectory_SetDuration	0	static
-../Core/Controllers/Trajectory.c:88:6:Trajectory_EnableDerivatives	0	static
-../Core/Controllers/Trajectory.c:95:6:Trajectory_Start	0	static
-../Core/Controllers/Trajectory.c:100:6:Trajectory_Stop	0	static
-../Core/Controllers/Trajectory.c:106:6:Trajectory_Compute	16	static
-../Core/Controllers/Trajectory.c:134:9:Trajectory_IsActive	0	static
-../Core/Controllers/Trajectory.c:140:19:Trajectory_ParseCoeffs	32	static
+../Core/Controllers/Trajectory.c:77:6:Trajectory_SetCoefficients	0	static
+../Core/Controllers/Trajectory.c:81:6:Trajectory_SetDuration	0	static
+../Core/Controllers/Trajectory.c:86:6:Trajectory_EnableDerivatives	0	static
+../Core/Controllers/Trajectory.c:93:6:Trajectory_Start	0	static
+../Core/Controllers/Trajectory.c:98:6:Trajectory_Stop	0	static
+../Core/Controllers/Trajectory.c:104:6:Trajectory_Compute	16	static
+../Core/Controllers/Trajectory.c:132:9:Trajectory_IsActive	0	static
+../Core/Controllers/Trajectory.c:138:19:Trajectory_ParseCoeffs	32	static

@@ -145,6 +145,7 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  HAL_TIM_Base_Start_IT(&htim11); // Start controller timer
   while (1)
   {
     /* USER CODE END WHILE */
@@ -156,6 +157,8 @@ int main(void)
 
 		  float controller_dt = DWT_GetDeltaTime();
 		  pidObj.dt = (float32_t)controller_dt;
+
+		  Trajectory_Compute(&robotTraj, (float32_t)controller_dt);
 
 		  MultivariablePID_SetSetpoint(&pidObj, q_set);
 		  MultivariablePID_Compute(&pidObj, q_meas);
@@ -170,6 +173,7 @@ int main(void)
 		  for (uint8_t i = 0; i < sensors.num_sensors; i++) {
 			  q_meas[i] = sensors.angles[i];
 		  }
+
 		  lastTime = HAL_GetTick();
 	  }
   }
@@ -394,7 +398,7 @@ static void MX_TIM11_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN TIM11_Init 2 */
-  HAL_TIM_Base_Start_IT(&htim11); // Start controller timer
+
   /* USER CODE END TIM11_Init 2 */
 
 }

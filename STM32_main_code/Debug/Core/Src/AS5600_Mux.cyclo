@@ -1,6 +1,6 @@
-../Core/Src/AS5600_Mux.c:47:19:AS5600_Mux_Init	13
-../Core/Src/AS5600_Mux.c:135:19:AS5600_Mux_SelectChannel	2
-../Core/Src/AS5600_Mux.c:175:19:AS5600_Mux_ReadAngle	8
-../Core/Src/AS5600_Mux.c:227:6:AS5600_Mux_ReadAllAngles	9
-../Core/Src/AS5600_Mux.c:233:7:AS5600_Mux_ConvertToDegrees	1
-../Core/Src/AS5600_Mux.c:237:7:AS5600_Mux_ConvertToRadians	1
+../Core/Src/AS5600_Mux.c:18:19:AS5600_Mux_Init	13
+../Core/Src/AS5600_Mux.c:49:19:AS5600_Mux_SelectChannel	2
+../Core/Src/AS5600_Mux.c:62:19:AS5600_Mux_ReadAngle	8
+../Core/Src/AS5600_Mux.c:102:6:AS5600_Mux_ReadAllAngles	9
+../Core/Src/AS5600_Mux.c:108:7:AS5600_Mux_ConvertToDegrees	1
+../Core/Src/AS5600_Mux.c:112:7:AS5600_Mux_ConvertToRadians	1

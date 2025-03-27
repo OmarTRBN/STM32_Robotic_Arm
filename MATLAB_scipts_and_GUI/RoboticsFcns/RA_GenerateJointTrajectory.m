@@ -1,4 +1,4 @@
-function [q, qd, qdd, pp] = RA_GenerateJointTrajectory(robot, wpts, tpts, initialGuess)
+function [coeffMat, tvec, q, qd, qdd] = RA_GenerateJointTrajectory(robot, wpts, tpts, initialGuess)
     if size(wpts, 1) ~= 3
         error('wpts must have 3 rows (X, Y, Z coordinates)');
     end
@@ -29,6 +29,7 @@ function [q, qd, qdd, pp] = RA_GenerateJointTrajectory(robot, wpts, tpts, initia
     jointWpts = joint_des(:, indices);
     tvec = tpts(1):0.01:tpts(end);
     [q, qd, qdd, pp] = quinticpolytraj(jointWpts, tpts, tvec);
+    coeffMat = pp.coefs;
 end
 
 

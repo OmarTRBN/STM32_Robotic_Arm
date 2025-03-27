@@ -7,9 +7,9 @@ function robot = RA_CreateRobot(plotRobot, showDetails)
     % theta: joint angle (variable for revolute joints)
     % Define DH parameters [a, alpha, d, theta]
     dhParams = [
-                0  	 0 0.2  0;
-                0.5  0  0	0;
-                0.7  pi 0	0;
+                0  	 pi/2 0.2  0;
+                0.5  0    0	   0;
+                0.7  pi/2 0	   0;
                ];
     
     jointLimits = [

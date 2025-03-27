@@ -53,18 +53,16 @@ void Trajectory_Init(Trajectory *traj) {
 	for (int i = 0; i < NUM_JOINTS_TRAJ*TRAJ_POLY_TERMS; i++) {
 		traj->coeff_data[i] = 0.0f;
 	}
+	arm_mat_init_f32(&(traj->coeff_mat), NUM_JOINTS_TRAJ, TRAJ_POLY_TERMS, traj->coeff_data);
 
 	for (int i = 0; i < TRAJ_POLY_TERMS; i++) {
 		traj->time_vec_pos_data[i] = 0.0f;
 		traj->time_vec_vel_data[i] = 0.0f;
 		traj->time_vec_acc_data[i] = 0.0f;
 	}
-
-	for (int i = 0; i < TRAJ_POLY_TERMS; i++) {
-		traj->time_vec_pos_data[i] = 0.0f;
-		traj->time_vec_vel_data[i] = 0.0f;
-		traj->time_vec_acc_data[i] = 0.0f;
-	}
+	arm_mat_init_f32(&(traj->time_vec_pos_mat), TRAJ_POLY_TERMS, 1, traj->time_vec_pos_data);
+	arm_mat_init_f32(&(traj->time_vec_vel_mat), TRAJ_POLY_TERMS, 1, traj->time_vec_vel_data);
+	arm_mat_init_f32(&(traj->time_vec_acc_mat), TRAJ_POLY_TERMS, 1, traj->time_vec_acc_data);
 
 	traj->startTime = 0.0f;
 	traj->currentTime = 0.0f;
