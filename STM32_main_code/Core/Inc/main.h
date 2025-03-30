@@ -46,6 +46,9 @@ extern "C" {
 #define CMD_STEP_MOTOR_STATE 	( ('M'<<8) | 'S') // "MS" Motor State
 #define CMD_SET_PARAM			( ('C'<<8) | 'P') // "CP" Controller Parameters
 #define CMD_SET_TRAJ_COEFF      ( ('T'<<8) | 'C') // "TC" Trajectory Coefficients
+#define CMD_START_TRAJ          ( ('S'<<8) | 'T') // "ST" Start Trajectory
+
+
 
 #define CMD_AS5600_DATA    ( ('A'<<8) | 'B') // "AB"
 
@@ -63,7 +66,7 @@ extern "C" {
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
 #define NUM_JOINTS 4
-#define NUM_JOINTS_TRAJ 1
+#define NUM_JOINTS_TRAJ 2
 #define TRAJ_POLY_TERMS 6
 #define TRAJ_COEFF_LEN NUM_JOINTS_TRAJ*TRAJ_POLY_TERMS
 /* USER CODE END EM */

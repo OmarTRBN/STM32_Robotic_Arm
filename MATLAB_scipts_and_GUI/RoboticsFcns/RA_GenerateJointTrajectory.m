@@ -6,10 +6,12 @@ function [coeffMat, tvec, q, qd, qdd] = RA_GenerateJointTrajectory(robot, wpts, 
     if size(wpts, 2) ~= length(tpts)
         error('Number of waypoints in wpts does not match number of time points in tpts');
     end
-    dt = 0.5;
+
+    dt = 0.5; % Sampling before IK for more accurate solutions
     tvec = tpts(1):dt:tpts(end);
+    
     [q_xyz, ~, ~, ~] = quinticpolytraj(wpts, tpts, tvec);
-    indices = round((tpts - tvec(1)) / dt) + 1;
+    indices = round((tpts - tvec(1)) / dt) + 1; % Extract indices of tpts in tvec array
     
     config = homeConfiguration(robot);
     numJoints = length(config);
@@ -28,6 +30,7 @@ function [coeffMat, tvec, q, qd, qdd] = RA_GenerateJointTrajectory(robot, wpts, 
     
     jointWpts = joint_des(:, indices);
     tvec = tpts(1):0.01:tpts(end);
+
     [q, qd, qdd, pp] = quinticpolytraj(jointWpts, tpts, tvec);
     coeffMat = pp.coefs;
 end

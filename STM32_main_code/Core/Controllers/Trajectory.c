@@ -64,6 +64,15 @@ void Trajectory_Init(Trajectory *traj) {
 	arm_mat_init_f32(&(traj->time_vec_vel_mat), TRAJ_POLY_TERMS, 1, traj->time_vec_vel_data);
 	arm_mat_init_f32(&(traj->time_vec_acc_mat), TRAJ_POLY_TERMS, 1, traj->time_vec_acc_data);
 
+	for (int i = 0; i < NUM_JOINTS_TRAJ; i++) {
+		traj->position_data[i] = 0.0f;
+		traj->velocity_data[i] = 0.0f;
+		traj->acceleration_data[i] = 0.0f;
+	}
+	arm_mat_init_f32(&(traj->position_mat), NUM_JOINTS_TRAJ, 1, traj->position_data);
+	arm_mat_init_f32(&(traj->velocity_mat), NUM_JOINTS_TRAJ, 1, traj->velocity_data);
+	arm_mat_init_f32(&(traj->acceleration_mat), NUM_JOINTS_TRAJ, 1, traj->acceleration_data);
+
 	traj->startTime = 0.0f;
 	traj->currentTime = 0.0f;
 	traj->duration = 0.0f;
@@ -94,6 +103,8 @@ void Trajectory_Start(Trajectory *traj) {
 	if (traj == NULL) return;
 
 	traj->state = TRAJ_RUNNING;
+	traj->startTime = 0.0f;
+	traj->currentTime = 0.0f;
 }
 void Trajectory_Stop(Trajectory *traj) {
 	if (traj == NULL) return;

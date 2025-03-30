@@ -555,10 +555,10 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
 			char *recievedShit = (char *)&handle->rxBuffer[2];
 
 			if (ParsePIDParametersFromUART(&pidObj, recievedShit, strlen(recievedShit))) {
-				sprintf(response, "PID %s parameters updated successfully, %s\n", paramType, &handle->rxBuffer[4]);
+				sprintf(response, "PID %s parameters updated successfully.\n", paramType);
 			}
 			else {
-				sprintf(response, "Error: Failed to parse PID %s parameters\n", paramType);
+				sprintf(response, "Error: Failed to parse PID %s parameters!\n", paramType);
 			}
 			CommandProtocol_SendResponse(handle, response);
 			break;
@@ -575,6 +575,12 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
 				sprintf(response, "Error: Failed to parse trajectory coefficients\n");
 			}
         	CommandProtocol_SendResponse(handle, response);
+        	break;
+
+        case CMD_START_TRAJ:
+        	Trajectory_Start(&robotTraj);
+        	sprintf(response, "Trajectory started.\n");
+			CommandProtocol_SendResponse(handle, response);
         	break;
 
         case CMD_AS5600_DATA:
