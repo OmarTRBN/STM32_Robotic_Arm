@@ -530,7 +530,7 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
 	uint16_t encodedCommand = (handle->rxBuffer[0] << 8) | handle->rxBuffer[1];
     char response[50];
 
-    switch(encodedCommand) {
+    switch(encodedCommand) { // First 2 bytes are command
         case CMD_TEST_LED:
             HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
             CommandProtocol_SendResponse(handle, "LED TOGGLED!\n");
@@ -564,20 +564,17 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
 			break;
 
         case CMD_SET_TRAJ_COEFF:
-        	float32_t parsed_coeffs[TRAJ_COEFF_LEN];
-
-        	if (Trajectory_ParseCoeffs((const char*)&handle->rxBuffer[2], parsed_coeffs, TRAJ_COEFF_LEN) == HAL_OK) {
-
-        		Trajectory_SetCoefficients(&robotTraj, parsed_coeffs);
-				sprintf(response, "Trajectory coefficients set successfully\n");
-        	}
-        	else {
-				sprintf(response, "Error: Failed to parse trajectory coefficients\n");
+        	if (Trajectory_ParseCoeffs((char*)handle->rxBuffer, &robotTraj) == HAL_OK)
+        	{
+				CommandProtocol_SendResponse(handle, "Trajectory coefficients received.\n");
 			}
-        	CommandProtocol_SendResponse(handle, response);
+        	else
+        	{
+				CommandProtocol_SendResponse(handle, "Error parsing trajectory data.\n");
+			}
         	break;
 
-        case CMD_START_TRAJ:
+        case CMD_BEGIN_TRAJ:
         	Trajectory_Start(&robotTraj);
         	sprintf(response, "Trajectory started.\n");
 			CommandProtocol_SendResponse(handle, response);
