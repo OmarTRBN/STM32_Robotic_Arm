@@ -103,7 +103,7 @@
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:6417:29:HAL_TIM_GetChannelState	0	static
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:6434:30:HAL_TIM_DMABurstState	0	static
 ../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:6777:6:TIM_Base_SetConfig	12	static
-../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:6908:6:TIM_OC2_SetConfig	12	static
-../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:7254:6:TIM_TI1_SetConfig	12	static
-../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:7548:6:TIM_ETR_SetConfig	4	static
-../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:7578:6:TIM_CCxChannelCmd	0	static
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:6905:6:TIM_OC2_SetConfig	12	static
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:7251:6:TIM_TI1_SetConfig	12	static
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:7545:6:TIM_ETR_SetConfig	4	static
+../Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c:7575:6:TIM_CCxChannelCmd	0	static

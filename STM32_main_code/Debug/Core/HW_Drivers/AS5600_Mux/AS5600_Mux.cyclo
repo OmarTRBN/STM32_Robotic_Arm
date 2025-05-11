@@ -1,0 +1,6 @@
+../Core/HW_Drivers/AS5600_Mux/AS5600_Mux.c:51:26:AS5600_MUX_Init	3
+../Core/HW_Drivers/AS5600_Mux/AS5600_Mux.c:67:26:AS5600_MUX_StartStopDMA	4
+../Core/HW_Drivers/AS5600_Mux/AS5600_Mux.c:85:26:AS5600_MUX_LoopDMA	9
+../Core/HW_Drivers/AS5600_Mux/AS5600_Mux.c:108:6:AS5600_MUX_TxCpltCallback	1
+../Core/HW_Drivers/AS5600_Mux/AS5600_Mux.c:112:6:AS5600_MUX_MemRxCpltCallback	1
+../Core/HW_Drivers/AS5600_Mux/AS5600_Mux.c:117:26:AS5600_MUX_ReadChannel	6

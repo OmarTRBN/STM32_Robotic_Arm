@@ -30,10 +30,14 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Middlewares/ST/ARM/DSP/Inc/arm_math.h \
- ../Drivers/CMSIS/Include/cmsis_compiler.h ../Core/Inc/CommandProtocol.h \
- ../Core/Inc/main.h ../Core/Inc/StepMotor.h ../Core/Inc/Timing.h \
- ../Core/Inc/AS5600_Mux.h ../Core/Inc/lut.h \
- ../Core/Controllers/PID_Control.h ../Core/Controllers/Trajectory.h
+ ../Drivers/CMSIS/Include/cmsis_compiler.h ../Core/Inc/dma.h \
+ ../Core/Inc/main.h ../Core/Inc/i2c.h ../Core/Inc/tim.h \
+ ../Core/Inc/usart.h ../Core/Inc/gpio.h ../Core/Inc/CommandProtocol.h \
+ ../Core/Inc/StepMotor.h ../Core/Inc/Timing.h \
+ C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux.h \
+ C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux_Def.h \
+ ../Core/Inc/lut.h ../Core/Controllers/PID_Control.h \
+ ../Core/Controllers/Trajectory.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -67,11 +71,17 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 ../Middlewares/ST/ARM/DSP/Inc/arm_math.h:
 ../Drivers/CMSIS/Include/cmsis_compiler.h:
-../Core/Inc/CommandProtocol.h:
+../Core/Inc/dma.h:
 ../Core/Inc/main.h:
+../Core/Inc/i2c.h:
+../Core/Inc/tim.h:
+../Core/Inc/usart.h:
+../Core/Inc/gpio.h:
+../Core/Inc/CommandProtocol.h:
 ../Core/Inc/StepMotor.h:
 ../Core/Inc/Timing.h:
-../Core/Inc/AS5600_Mux.h:
+C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux.h:
+C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux_Def.h:
 ../Core/Inc/lut.h:
 ../Core/Controllers/PID_Control.h:
 ../Core/Controllers/Trajectory.h:
