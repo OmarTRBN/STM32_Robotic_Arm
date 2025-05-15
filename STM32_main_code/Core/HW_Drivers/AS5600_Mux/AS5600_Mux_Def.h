@@ -43,7 +43,7 @@ typedef struct {
 
 	bool dma_mode_start_stop;
 	volatile bool dma_busy;
-	uint8_t dma_current_channel;
+	volatile uint8_t dma_current_channel;
     uint8_t dma_buffer[2];
     AS5600_MUX_DMA_LoopStateTypeDef dma_loop_state;
 

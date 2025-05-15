@@ -44,6 +44,9 @@ static void HandleCpltDMA(AS5600_MUX_HandleTypeDef *handle) {
 			handle->dma_loop_state = AS5600_MUX_DMA_IDLE;
 		}
 	}
+	else {
+		handle->dma_loop_state = AS5600_MUX_DMA_READY;
+	}
 
 	handle->dma_busy = 0;
 }
@@ -55,7 +58,7 @@ AS5600_MUX_StatusTypeDef AS5600_MUX_Init(AS5600_MUX_HandleTypeDef *handle, uint8
 
     handle->dma_mode_start_stop = AS5600_MUX_DMA_STOP;
     handle->dma_loop_state = AS5600_MUX_DMA_IDLE;
-    handle->dma_busy = 1;
+    handle->dma_busy = true;
 
     handle->num_channels = num_of_sensors;
     memset(handle->channel_raw_values, 0, AS5600_MUX_MAX_CHANNELS * sizeof(uint16_t));
@@ -114,6 +117,32 @@ void AS5600_MUX_MemRxCpltCallback(AS5600_MUX_HandleTypeDef *handle) {
 	handle->dma_busy = 0;
 }
 
+AS5600_MUX_StatusTypeDef AS5600_MUX_ReadAllPolling(AS5600_MUX_HandleTypeDef *handle) {
+	if (!handle) return AS5600_MUX_ERROR;
+	if (!handle->is_initialized || handle->dma_mode_start_stop == AS5600_MUX_DMA_RUN) return AS5600_MUX_ERROR;
+
+    uint8_t channel_select = 1;
+    uint8_t buffer[2];
+
+	for (int i=0; i<handle->num_channels; i++) {
+		handle->channel_states[i] = AS5600_MUX_OK;
+		channel_select = 1 << i;
+
+		// Switch channel
+		if (HAL_I2C_Master_Transmit(AS5600_MUX_I2C, TCA9548A_ADDR, &channel_select, 1, AS5600_MUX_TIMEOUT) != HAL_OK) {
+			handle->channel_states[i] = AS5600_MUX_ERROR;
+		}
+
+		// Read angle
+		if (HAL_I2C_Mem_Read(AS5600_MUX_I2C, AS5600_ADDR, ANGLE_MSB_REG, I2C_MEMADD_SIZE_8BIT, buffer, 2, AS5600_MUX_TIMEOUT) != HAL_OK) {
+			handle->channel_states[i] = AS5600_MUX_ERROR;
+		}
+
+	    handle->channel_raw_values[i] = ((buffer[0] << 8) | buffer[1]) & 0x0FFF;
+	}
+
+	return AS5600_MUX_OK;
+}
 AS5600_MUX_StatusTypeDef AS5600_MUX_ReadChannel(AS5600_MUX_HandleTypeDef *handle, uint8_t channel) {
 	if (!handle || channel >= handle->num_channels) return AS5600_MUX_ERROR;
 	if (handle->dma_mode_start_stop == AS5600_MUX_DMA_RUN) return AS5600_MUX_ERROR;

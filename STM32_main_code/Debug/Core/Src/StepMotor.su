@@ -1,7 +1,0 @@
-../Core/Src/StepMotor.c:11:19:StepMotor_Init	24	static
-../Core/Src/StepMotor.c:34:6:StepMotor_SetSpeedLUT	16	static
-../Core/Src/StepMotor.c:85:6:StepMotor_Enable	8	static
-../Core/Src/StepMotor.c:89:6:StepMotor_Disable	8	static
-../Core/Src/StepMotor.c:95:6:StepMotor_MultiSetSpeed	40	static
-../Core/Src/StepMotor.c:100:6:StepMotor_MultiEnable	0	static
-../Core/Src/StepMotor.c:104:6:StepMotor_MultiDisable	24	static

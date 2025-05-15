@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 #include "dma.h"
 #include "i2c.h"
 #include "tim.h"
@@ -26,14 +27,16 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "app.h"
+
 #include "CommandProtocol.h"
-#include "StepMotor.h"
 #include "Timing.h"
-#include "AS5600_Mux.h"
 #include "lut.h"
 
 #include "PID_Control.h"
 #include "Trajectory.h"
+
+//#include "app.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -61,9 +64,9 @@ volatile HAL_StatusTypeDef statusCheck = 0;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 CommandProtocol_Handle cmdHandle;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-StepMotor l1_motor;
-StepMotor l2_motor;
-StepMotor* motorArray[NUM_JOINTS];
+//StepMotor l1_motor;
+//StepMotor l2_motor;
+//StepMotor* motorArray[NUM_JOINTS];
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 float32_t q_set[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
 float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
@@ -75,9 +78,10 @@ Trajectory robotTraj;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
 void MyProcessCommand(CommandProtocol_Handle* handle);
-void setup_motors();
+//void setup_motors();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -117,31 +121,43 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_I2C1_Init();
-  MX_TIM11_Init();
   MX_TIM5_Init();
   MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
-
-  statusCheck = CommandProtocol_Init(&cmdHandle, &huart1, 100);
-
-  setup_motors();
-
-  MultivariablePID_Init(&pidObj);
-
-  Trajectory_Init(&robotTraj);
+  appMuxStatus = AS5600_MUX_Init(&appMuxHandle, 2);
+//
+//  statusCheck = CommandProtocol_Init(&cmdHandle, &huart1, 100);
+//
+//  setup_motors();
+//
+//  MultivariablePID_Init(&pidObj);
+//
+//  Trajectory_Init(&robotTraj);
 
 //  volatile uint32_t lastTime = 0; uint32_t interval = 4;
   /* USER CODE END 2 */
 
+  /* Init scheduler */
+  osKernelInitialize();
+
+  /* Call init function for freertos objects (in cmsis_os2.c) */
+  MX_FREERTOS_Init();
+
+  /* Start scheduler */
+  osKernelStart();
+
+  /* We should never get here as control is now taken by the scheduler */
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
+//  appMuxStatus = AS5600_MUX_StartStopDMA(&appMuxHandle, AS5600_MUX_DMA_RUN);
 //  HAL_TIM_Base_Start_IT(&htim11); // Start controller timer
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+//	  AS5600_MUX_LoopDMA(&muxHandle);
 //	  if(globalControllerFlag)
 //	  {
 //		  globalControllerFlag = 0;
@@ -218,6 +234,16 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C1) {
+    	AS5600_MUX_MemRxCpltCallback(&appMuxHandle);
+    }
+}
+void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
+    if (hi2c->Instance == I2C1) {
+    	AS5600_MUX_TxCpltCallback(&appMuxHandle);
+	}
+}
 void MyProcessCommand(CommandProtocol_Handle* handle) {
 	// Combine the first two characters into a 16-bit integer
 	uint16_t encodedCommand = (handle->rxBuffer[0] << 8) | handle->rxBuffer[1];
@@ -229,19 +255,19 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
             CommandProtocol_SendResponse(handle, "LED TOGGLED!\n");
             break;
 
-        case CMD_STEP_MOTOR_STATE:
-			int index = handle->rxBuffer[2] - '0'; // Convert char to int by subtracting '0'
-			char state = handle->rxBuffer[3];
-
-			if (state == '1') {
-				StepMotor_Enable(motorArray[index]);
-			}
-			else {
-				StepMotor_Disable(motorArray[index]);
-			}
-			sprintf(response, "Motor %d is at state %c\n", index, state);
-			CommandProtocol_SendResponse(handle, response);
-			break;
+//        case CMD_STEP_MOTOR_STATE:
+//			int index = handle->rxBuffer[2] - '0'; // Convert char to int by subtracting '0'
+//			char state = handle->rxBuffer[3];
+//
+//			if (state == '1') {
+//				StepMotor_Enable(motorArray[index]);
+//			}
+//			else {
+//				StepMotor_Disable(motorArray[index]);
+//			}
+//			sprintf(response, "Motor %d is at state %c\n", index, state);
+//			CommandProtocol_SendResponse(handle, response);
+//			break;
 
         case CMD_SET_PARAM:
 			char paramType[3] = {handle->rxBuffer[2], handle->rxBuffer[3], '\0'};
@@ -294,27 +320,49 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 	}
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
-{
-    if (htim->Instance == TIM11)
-    {
-    	globalControllerFlag = 1;
-    }
-}
+//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
+//{
+//    if (htim->Instance == TIM11)
+//    {
+//    	globalControllerFlag = 1;
+//    }
+//}
 
-void setup_motors() {
-    // Initialize individual motors as you're already doing
-    statusCheck = StepMotor_Init(&l1_motor, &htim5, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin, M1_EN_GPIO_Port, M1_EN_Pin);
-    statusCheck = StepMotor_Init(&l2_motor, &htim9, TIM_CHANNEL_1, M2_DIR_GPIO_Port, M2_DIR_Pin, M2_EN_GPIO_Port, M2_EN_Pin);
-
-    // Set up the motor array
-    motorArray[0] = &l1_motor;
-    motorArray[1] = &l2_motor;
-
-    StepMotor_SetSpeedLUT(&l1_motor, 0); // Set motor speed to 0 Initially
-    StepMotor_SetSpeedLUT(&l2_motor, 0); // Set motor speed to 0 Initially
-}
+//void setup_motors() {
+//    // Initialize individual motors as you're already doing
+//    statusCheck = StepMotor_Init(&l1_motor, &htim5, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin, M1_EN_GPIO_Port, M1_EN_Pin);
+//    statusCheck = StepMotor_Init(&l2_motor, &htim9, TIM_CHANNEL_1, M2_DIR_GPIO_Port, M2_DIR_Pin, M2_EN_GPIO_Port, M2_EN_Pin);
+//
+//    // Set up the motor array
+//    motorArray[0] = &l1_motor;
+//    motorArray[1] = &l2_motor;
+//
+//    StepMotor_SetSpeedLUT(&l1_motor, 0); // Set motor speed to 0 Initially
+//    StepMotor_SetSpeedLUT(&l2_motor, 0); // Set motor speed to 0 Initially
+//}
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM11 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM11)
+  {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.

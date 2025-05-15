@@ -1,0 +1,7 @@
+../Core/HW_Drivers/StepMotor/StepMotor.c:11:19:StepMotor_Init	1
+../Core/HW_Drivers/StepMotor/StepMotor.c:34:6:StepMotor_SetSpeedLUT	5
+../Core/HW_Drivers/StepMotor/StepMotor.c:85:6:StepMotor_Enable	1
+../Core/HW_Drivers/StepMotor/StepMotor.c:89:6:StepMotor_Disable	1
+../Core/HW_Drivers/StepMotor/StepMotor.c:95:6:StepMotor_MultiSetSpeed	7
+../Core/HW_Drivers/StepMotor/StepMotor.c:100:6:StepMotor_MultiEnable	1
+../Core/HW_Drivers/StepMotor/StepMotor.c:104:6:StepMotor_MultiDisable	3
