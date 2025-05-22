@@ -43,10 +43,16 @@ Core/Src/freertos.o: ../Core/Src/freertos.c \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/App/app.h \
+ C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/SerialComm/SerialComm.h \
+ ../Core/Inc/usart.h ../Core/Inc/main.h \
  C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux.h \
  C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux_Def.h \
- ../Core/Inc/i2c.h ../Core/Inc/main.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor.h
+ ../Core/Inc/i2c.h \
+ C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor.h \
+ ../Core/Inc/tim.h \
+ C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor_Def.h \
+ C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/lut.h \
+ C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 ../Core/Inc/FreeRTOSConfig.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h:
@@ -92,8 +98,14 @@ Core/Src/freertos.o: ../Core/Src/freertos.c \
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h:
 C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/App/app.h:
+C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/SerialComm/SerialComm.h:
+../Core/Inc/usart.h:
+../Core/Inc/main.h:
 C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux.h:
 C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux_Def.h:
 ../Core/Inc/i2c.h:
-../Core/Inc/main.h:
 C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor.h:
+../Core/Inc/tim.h:
+C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor_Def.h:
+C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/lut.h:
+C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h:

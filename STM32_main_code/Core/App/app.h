@@ -10,13 +10,47 @@
 
 #include "main.h"
 
+#include "SerialComm.h"
 #include "AS5600_Mux.h"
 #include "StepMotor.h"
+#include "PID_Control.h"
+
+/* 🥊🥊🥊 Serial Communication 🥊🥊🥊 */
+extern SerialComm_HandleTypeDef appSerialHandle;
+extern SerialComm_StatusTypeDef appSerialStatus;
+extern uint8_t appSerialDataArray[SERIALCOMM_BUFF_SIZE];
 
 /* 🥊🥊🥊 Encoders 🥊🥊🥊 */
+#define APP_ENCODER_FREQ 250
+
 extern AS5600_MUX_HandleTypeDef appMuxHandle;
 extern AS5600_MUX_StatusTypeDef appMuxStatus;
 
-/*🥊🥊🥊  Motors   🥊🥊🥊*/
+/*🥊🥊🥊 Motors 🥊🥊🥊*/
+#define NUM_MOTORS 2
+
+extern STEPMOTOR_HandleTypeDef appStepMotors[NUM_MOTORS];
+extern STEPMOTOR_StatusTypeDef appStepMotorStatus;
+
+void App_InitMotors(void);
+
+/*🥊🥊🥊 Controller Variables 🥊🥊🥊*/
+#define APP_CONTROLLER_FREQ 100
+
+extern float q_set[NUM_MOTORS];
+extern float q_meas[NUM_MOTORS];
+extern float q_out[NUM_MOTORS];
+
+extern MultivariablePID appPidObj;
+
+#define CMD_PREFIX_KP "KP"
+#define CMD_PREFIX_KI "KI"
+#define CMD_PREFIX_KD "KD"
+#define CMD_SET_KP              ( ('K'<<8) | 'P') // "KP"
+#define CMD_SET_KI              ( ('K'<<8) | 'I') // "KI"
+#define CMD_SET_KD              ( ('K'<<8) | 'D') // "KD"
+
+#define MAX_UART_BUFFER 800
+
 
 #endif /* INC_APP_H_ */

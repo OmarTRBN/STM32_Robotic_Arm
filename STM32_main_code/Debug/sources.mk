@@ -23,8 +23,11 @@ C_DEPS :=
 # Every subdirectory with source files must be described here
 SUBDIRS := \
 Core/App \
+Core/Controllers/Multivariable_PID \
 Core/Controllers \
 Core/HW_Drivers/AS5600_Mux \
+Core/HW_Drivers/DWT_Timing \
+Core/HW_Drivers/SerialComm \
 Core/HW_Drivers/StepMotor \
 Core/Src \
 Core/Startup \

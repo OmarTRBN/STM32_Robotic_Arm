@@ -17,7 +17,10 @@ RM := rm -rf
 -include Core/Startup/subdir.mk
 -include Core/Src/subdir.mk
 -include Core/HW_Drivers/StepMotor/subdir.mk
+-include Core/HW_Drivers/SerialComm/subdir.mk
+-include Core/HW_Drivers/DWT_Timing/subdir.mk
 -include Core/HW_Drivers/AS5600_Mux/subdir.mk
+-include Core/Controllers/Multivariable_PID/subdir.mk
 -include Core/Controllers/subdir.mk
 -include Core/App/subdir.mk
 -include objects.mk

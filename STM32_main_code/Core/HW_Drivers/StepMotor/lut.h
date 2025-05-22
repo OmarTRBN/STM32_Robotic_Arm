@@ -12,7 +12,7 @@
 
 #define LUT_SIZE 5000
 
-extern const uint16_t LUT_PSC[LUT_SIZE];          // Prescaler array
-extern const uint16_t LUT_ARR[LUT_SIZE];          // Auto-Reload array
+extern const uint16_t LUT_PSC[LUT_SIZE];	// Prescaler array
+extern const uint16_t LUT_ARR[LUT_SIZE];	// Auto-Reload array
 
 #endif /* INC_LUT_H_ */

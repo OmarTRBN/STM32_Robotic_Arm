@@ -65,7 +65,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-#define NUM_JOINTS 4
+#define NUM_JOINTS 2
 #define NUM_JOINTS_TRAJ 2
 #define TRAJ_POLY_TERMS 6
 #define TRAJ_COEFF_LEN NUM_JOINTS_TRAJ*TRAJ_POLY_TERMS

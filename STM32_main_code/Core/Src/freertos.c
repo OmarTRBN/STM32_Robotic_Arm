@@ -62,6 +62,13 @@ const osThreadAttr_t as5600Task_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
+/* Definitions for controllerTask */
+osThreadId_t controllerTaskHandle;
+const osThreadAttr_t controllerTask_attributes = {
+  .name = "controllerTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -70,6 +77,7 @@ const osThreadAttr_t as5600Task_attributes = {
 
 void StartDefaultTask(void *argument);
 void ReadAs5600Task(void *argument);
+void RunControllerTask(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -106,6 +114,9 @@ void MX_FREERTOS_Init(void) {
   /* creation of as5600Task */
   as5600TaskHandle = osThreadNew(ReadAs5600Task, NULL, &as5600Task_attributes);
 
+  /* creation of controllerTask */
+  controllerTaskHandle = osThreadNew(RunControllerTask, NULL, &controllerTask_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -129,7 +140,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
+	  // HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
     osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
@@ -146,17 +157,51 @@ void ReadAs5600Task(void *argument)
 {
   /* USER CODE BEGIN ReadAs5600Task */
 	TickType_t xLastWakeTime;
-	const TickType_t xPeriodTicks = FREQ_TO_TICKS(200);
+	const TickType_t xPeriodTicks = FREQ_TO_TICKS(APP_ENCODER_FREQ);
 
 	xLastWakeTime = xTaskGetTickCount();
   /* Infinite loop */
   for(;;)
   {
 	  appMuxStatus = AS5600_MUX_ReadAllPolling(&appMuxHandle);
+	  for (uint8_t i = 0; i < appMuxHandle.num_channels; i++) {
+		  q_meas[i] = appMuxHandle.channel_raw_values[i];
+	  }
 
 	  vTaskDelayUntil(&xLastWakeTime, xPeriodTicks);
   }
   /* USER CODE END ReadAs5600Task */
+}
+
+/* USER CODE BEGIN Header_RunControllerTask */
+/**
+* @brief Function implementing the controllerTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_RunControllerTask */
+void RunControllerTask(void *argument)
+{
+  /* USER CODE BEGIN RunControllerTask */
+	TickType_t xLastWakeTime;
+	const TickType_t xPeriodTicks = FREQ_TO_TICKS(APP_CONTROLLER_FREQ);
+	appPidObj.dt = 1.0f / ((float) APP_CONTROLLER_FREQ);
+
+	xLastWakeTime = xTaskGetTickCount();
+  /* Infinite loop */
+  for(;;)
+  {
+	  MultivariablePID_SetSetpoint(&appPidObj, q_set);
+	  MultivariablePID_Compute(&appPidObj, q_meas);
+
+	  for (int i=0; i<NUM_MOTORS; i++) {
+		  q_out[i] = appPidObj.output_data[i];
+	  }
+
+	  STEPMOTOR_MultiSetSpeed(appStepMotors, q_out, NUM_MOTORS);
+	  vTaskDelayUntil(&xLastWakeTime, xPeriodTicks);
+  }
+  /* USER CODE END RunControllerTask */
 }
 
 /* Private application code --------------------------------------------------*/

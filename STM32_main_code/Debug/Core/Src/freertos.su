@@ -1,3 +1,4 @@
-../Core/Src/freertos.c:126:6:StartDefaultTask	8	static
-../Core/Src/freertos.c:145:6:ReadAs5600Task	24	static
-../Core/Src/freertos.c:81:6:MX_FREERTOS_Init	8	static
+../Core/Src/freertos.c:137:6:StartDefaultTask	8	static
+../Core/Src/freertos.c:156:6:ReadAs5600Task	24	static
+../Core/Src/freertos.c:183:6:RunControllerTask	32	static
+../Core/Src/freertos.c:89:6:MX_FREERTOS_Init	8	static

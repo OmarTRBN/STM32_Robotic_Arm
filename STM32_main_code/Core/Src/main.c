@@ -31,7 +31,6 @@
 
 #include "CommandProtocol.h"
 #include "Timing.h"
-#include "lut.h"
 
 #include "PID_Control.h"
 #include "Trajectory.h"
@@ -58,19 +57,19 @@
 
 /* USER CODE BEGIN PV */
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-char globalDataArray[1100];
-volatile uint8_t globalControllerFlag = 0;
-volatile HAL_StatusTypeDef statusCheck = 0;
+//char globalDataArray[1100];
+//volatile uint8_t globalControllerFlag = 0;
+//volatile HAL_StatusTypeDef statusCheck = 0;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-CommandProtocol_Handle cmdHandle;
+//CommandProtocol_Handle cmdHandle;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 //StepMotor l1_motor;
 //StepMotor l2_motor;
 //StepMotor* motorArray[NUM_JOINTS];
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-float32_t q_set[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
-float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
-MultivariablePID pidObj;
+//float32_t q_set[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
+//float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
+//MultivariablePID pidObj;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 Trajectory robotTraj;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
@@ -80,7 +79,7 @@ Trajectory robotTraj;
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-void MyProcessCommand(CommandProtocol_Handle* handle);
+void MyProcessCommand(SerialComm_HandleTypeDef* hserial);
 //void setup_motors();
 /* USER CODE END PFP */
 
@@ -97,7 +96,8 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-  CommandProtocol_SetCommandProcessor(MyProcessCommand);
+	SerialComm_SetCommandCallback(MyProcessCommand);
+//  CommandProtocol_SetCommandProcessor(MyProcessCommand);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -124,13 +124,20 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
-  appMuxStatus = AS5600_MUX_Init(&appMuxHandle, 2);
-//
+  /* 🥊🥊🥊 Serial Communication 🥊🥊🥊 */
+  appSerialStatus = SerialComm_Init(&appSerialHandle, appSerialDataArray, SERIALCOMM_BUFF_SIZE, 1000);
+
+  /* 🥊🥊🥊 Encoders 🥊🥊🥊 */
+  appMuxStatus = AS5600_MUX_Init(&appMuxHandle, NUM_MOTORS);
+
+  /*🥊🥊🥊 Motors 🥊🥊🥊*/
+  App_InitMotors();
+
+  /*🥊🥊🥊 PID Control 🥊🥊🥊*/
+  MultivariablePID_Init(&appPidObj);
+
 //  statusCheck = CommandProtocol_Init(&cmdHandle, &huart1, 100);
 //
-//  setup_motors();
-//
-//  MultivariablePID_Init(&pidObj);
 //
 //  Trajectory_Init(&robotTraj);
 
@@ -244,15 +251,15 @@ void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
     	AS5600_MUX_TxCpltCallback(&appMuxHandle);
 	}
 }
-void MyProcessCommand(CommandProtocol_Handle* handle) {
+void MyProcessCommand(SerialComm_HandleTypeDef* hserial) {
 	// Combine the first two characters into a 16-bit integer
-	uint16_t encodedCommand = (handle->rxBuffer[0] << 8) | handle->rxBuffer[1];
-    char response[50];
+	uint16_t encodedCommand = (hserial->pRxBuffer[0] << 8) | hserial->pRxBuffer[1];
+//    char response[50];
 
     switch(encodedCommand) { // First 2 bytes are command
         case CMD_TEST_LED:
             HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
-            CommandProtocol_SendResponse(handle, "LED TOGGLED!\n");
+//            CommandProtocol_SendResponse(handle, "LED TOGGLED!\n");
             break;
 
 //        case CMD_STEP_MOTOR_STATE:
@@ -269,35 +276,35 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
 //			CommandProtocol_SendResponse(handle, response);
 //			break;
 
-        case CMD_SET_PARAM:
-			char paramType[3] = {handle->rxBuffer[2], handle->rxBuffer[3], '\0'};
-			char *recievedShit = (char *)&handle->rxBuffer[2];
+//        case CMD_SET_PARAM:
+//			char paramType[3] = {handle->rxBuffer[2], handle->rxBuffer[3], '\0'};
+//			char *recievedShit = (char *)&handle->rxBuffer[2];
+//
+//			if (ParsePIDParametersFromUART(&pidObj, recievedShit, strlen(recievedShit))) {
+//				sprintf(response, "PID %s parameters updated successfully.\n", paramType);
+//			}
+//			else {
+//				sprintf(response, "Error: Failed to parse PID %s parameters!\n", paramType);
+//			}
+//			CommandProtocol_SendResponse(handle, response);
+//			break;
 
-			if (ParsePIDParametersFromUART(&pidObj, recievedShit, strlen(recievedShit))) {
-				sprintf(response, "PID %s parameters updated successfully.\n", paramType);
-			}
-			else {
-				sprintf(response, "Error: Failed to parse PID %s parameters!\n", paramType);
-			}
-			CommandProtocol_SendResponse(handle, response);
-			break;
-
-        case CMD_SET_TRAJ_COEFF:
-        	if (Trajectory_ParseCoeffs((char*)handle->rxBuffer, &robotTraj) == HAL_OK)
-        	{
-				CommandProtocol_SendResponse(handle, "Trajectory coefficients received.\n");
-			}
-        	else
-        	{
-				CommandProtocol_SendResponse(handle, "Error parsing trajectory data.\n");
-			}
-        	break;
-
-        case CMD_BEGIN_TRAJ:
-        	Trajectory_Start(&robotTraj);
-        	sprintf(response, "Trajectory started.\n");
-			CommandProtocol_SendResponse(handle, response);
-        	break;
+//        case CMD_SET_TRAJ_COEFF:
+//        	if (Trajectory_ParseCoeffs((char*)handle->rxBuffer, &robotTraj) == HAL_OK)
+//        	{
+//				CommandProtocol_SendResponse(handle, "Trajectory coefficients received.\n");
+//			}
+//        	else
+//        	{
+//				CommandProtocol_SendResponse(handle, "Error parsing trajectory data.\n");
+//			}
+//        	break;
+//
+//        case CMD_BEGIN_TRAJ:
+//        	Trajectory_Start(&robotTraj);
+//        	sprintf(response, "Trajectory started.\n");
+//			CommandProtocol_SendResponse(handle, response);
+//        	break;
 
 //        case CMD_AS5600_DATA:
 ////            sprintf(response, "AS5600 Angles: %d, %d\n", sensors.angles[0], sensors.angles[1]);
@@ -305,41 +312,26 @@ void MyProcessCommand(CommandProtocol_Handle* handle) {
 //            break;
 
         default:
-            sprintf(response, "Unknown command: %d\n", encodedCommand);
-        	CommandProtocol_SendResponse(handle, response);
+//            sprintf(response, "Unknown command: %d\n", encodedCommand);
+//        	CommandProtocol_SendResponse(handle, response);
         	break;
     }
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-	if (huart == cmdHandle.huart) {
-		uint8_t receivedByte = cmdHandle.rxBuffer[cmdHandle.rxIndex];
-		CommandProtocol_ProcessByte(&cmdHandle, receivedByte);
-		HAL_UART_Receive_IT(huart, &cmdHandle.rxBuffer[cmdHandle.rxIndex], 1);
-	}
+//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+//{
+//	if (huart == cmdHandle.huart) {
+//		uint8_t receivedByte = cmdHandle.rxBuffer[cmdHandle.rxIndex];
+//		CommandProtocol_ProcessByte(&cmdHandle, receivedByte);
+//		HAL_UART_Receive_IT(huart, &cmdHandle.rxBuffer[cmdHandle.rxIndex], 1);
+//	}
+//}
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+    if (huart == SERIALCOMM_UART) {
+        SerialComm_RxCpltCallback(&appSerialHandle);
+    }
 }
 
-//void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef* htim)
-//{
-//    if (htim->Instance == TIM11)
-//    {
-//    	globalControllerFlag = 1;
-//    }
-//}
-
-//void setup_motors() {
-//    // Initialize individual motors as you're already doing
-//    statusCheck = StepMotor_Init(&l1_motor, &htim5, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin, M1_EN_GPIO_Port, M1_EN_Pin);
-//    statusCheck = StepMotor_Init(&l2_motor, &htim9, TIM_CHANNEL_1, M2_DIR_GPIO_Port, M2_DIR_Pin, M2_EN_GPIO_Port, M2_EN_Pin);
-//
-//    // Set up the motor array
-//    motorArray[0] = &l1_motor;
-//    motorArray[1] = &l2_motor;
-//
-//    StepMotor_SetSpeedLUT(&l1_motor, 0); // Set motor speed to 0 Initially
-//    StepMotor_SetSpeedLUT(&l2_motor, 0); // Set motor speed to 0 Initially
-//}
 /* USER CODE END 4 */
 
 /**

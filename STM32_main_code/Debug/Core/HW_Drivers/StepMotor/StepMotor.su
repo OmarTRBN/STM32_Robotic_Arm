@@ -1,7 +1,5 @@
-../Core/HW_Drivers/StepMotor/StepMotor.c:11:19:StepMotor_Init	24	static
-../Core/HW_Drivers/StepMotor/StepMotor.c:34:6:StepMotor_SetSpeedLUT	16	static
-../Core/HW_Drivers/StepMotor/StepMotor.c:85:6:StepMotor_Enable	8	static
-../Core/HW_Drivers/StepMotor/StepMotor.c:89:6:StepMotor_Disable	8	static
-../Core/HW_Drivers/StepMotor/StepMotor.c:95:6:StepMotor_MultiSetSpeed	40	static
-../Core/HW_Drivers/StepMotor/StepMotor.c:100:6:StepMotor_MultiEnable	0	static
-../Core/HW_Drivers/StepMotor/StepMotor.c:104:6:StepMotor_MultiDisable	24	static
+../Core/HW_Drivers/StepMotor/StepMotor.c:31:25:STEPMOTOR_Init	16	static
+../Core/HW_Drivers/StepMotor/StepMotor.c:43:6:STEPMOTOR_SetSpeedLUT	16	static
+../Core/HW_Drivers/StepMotor/StepMotor.c:94:6:STEPMOTOR_EnableControl	16	static
+../Core/HW_Drivers/StepMotor/StepMotor.c:107:6:STEPMOTOR_MultiSetSpeed	40	static
+../Core/HW_Drivers/StepMotor/StepMotor.c:112:6:STEPMOTOR_MultiEnableControl	24	static

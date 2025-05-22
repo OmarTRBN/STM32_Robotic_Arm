@@ -1,8 +1,8 @@
-../Core/Src/main.c:247:6:MyProcessCommand	72	static
-../Core/Src/main.c:195:6:SystemClock_Config	88	static,ignoring_inline_asm
-../Core/Src/main.c:96:5:main	8	static
-../Core/Src/main.c:237:6:HAL_I2C_MemRxCpltCallback	0	static
-../Core/Src/main.c:242:6:HAL_I2C_MasterTxCpltCallback	0	static
-../Core/Src/main.c:314:6:HAL_UART_RxCpltCallback	16	static
-../Core/Src/main.c:353:6:HAL_TIM_PeriodElapsedCallback	0	static
-../Core/Src/main.c:371:6:Error_Handler	0	static,ignoring_inline_asm
+../Core/Src/main.c:254:6:MyProcessCommand	0	static
+../Core/Src/main.c:202:6:SystemClock_Config	88	static,ignoring_inline_asm
+../Core/Src/main.c:95:5:main	8	static
+../Core/Src/main.c:244:6:HAL_I2C_MemRxCpltCallback	0	static
+../Core/Src/main.c:249:6:HAL_I2C_MasterTxCpltCallback	0	static
+../Core/Src/main.c:329:6:HAL_UART_RxCpltCallback	0	static
+../Core/Src/main.c:345:6:HAL_TIM_PeriodElapsedCallback	0	static
+../Core/Src/main.c:363:6:Error_Handler	0	static,ignoring_inline_asm

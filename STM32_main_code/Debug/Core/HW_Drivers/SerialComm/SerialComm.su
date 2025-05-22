@@ -1,0 +1,5 @@
+../Core/HW_Drivers/SerialComm/SerialComm.c:11:6:SerialComm_SetCommandCallback	0	static
+../Core/HW_Drivers/SerialComm/SerialComm.c:15:26:SerialComm_Init	16	static
+../Core/HW_Drivers/SerialComm/SerialComm.c:33:26:SerialComm_ProcessByte	16	static
+../Core/HW_Drivers/SerialComm/SerialComm.c:65:26:SerialComm_SendResponse	8	static
+../Core/HW_Drivers/SerialComm/SerialComm.c:77:6:SerialComm_RxCpltCallback	16	static

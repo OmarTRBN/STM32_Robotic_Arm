@@ -1,0 +1,2 @@
+../Core/HW_Drivers/DWT_Timing/Timing.c:12:6:DWT_Init	1
+../Core/HW_Drivers/DWT_Timing/Timing.c:19:7:DWT_GetDeltaTime	1

@@ -1,7 +1,7 @@
 Core/HW_Drivers/StepMotor/StepMotor.o: \
  ../Core/HW_Drivers/StepMotor/StepMotor.c \
- ../Core/HW_Drivers/StepMotor/StepMotor.h ../Core/Inc/main.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
+ ../Core/HW_Drivers/StepMotor/StepMotor.h ../Core/Inc/tim.h \
+ ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
@@ -32,9 +32,11 @@ Core/HW_Drivers/StepMotor/StepMotor.o: \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
  ../Middlewares/ST/ARM/DSP/Inc/arm_math.h \
- ../Drivers/CMSIS/Include/cmsis_compiler.h ../Core/Inc/lut.h \
- ../Core/Inc/main.h
+ ../Drivers/CMSIS/Include/cmsis_compiler.h \
+ ../Core/HW_Drivers/StepMotor/StepMotor_Def.h ../Core/Inc/main.h \
+ ../Core/HW_Drivers/StepMotor/lut.h
 ../Core/HW_Drivers/StepMotor/StepMotor.h:
+../Core/Inc/tim.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -68,5 +70,6 @@ Core/HW_Drivers/StepMotor/StepMotor.o: \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 ../Middlewares/ST/ARM/DSP/Inc/arm_math.h:
 ../Drivers/CMSIS/Include/cmsis_compiler.h:
-../Core/Inc/lut.h:
+../Core/HW_Drivers/StepMotor/StepMotor_Def.h:
 ../Core/Inc/main.h:
+../Core/HW_Drivers/StepMotor/lut.h:
