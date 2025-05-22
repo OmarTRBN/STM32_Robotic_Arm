@@ -27,7 +27,7 @@ void App_InitMotors(void) {
 }
 
 /*🥊🥊🥊 PID Control 🥊🥊🥊*/
-float q_set[NUM_MOTORS] = { 2048.0, 2048.0 };
-float q_meas[NUM_MOTORS] = { 2048.0, 2048.0 };
-float q_out[NUM_MOTORS] = {0, 0};
+float q_set[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
+float q_meas[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
+float q_out[NUM_JOINTS] = {0, 0};
 MultivariablePID appPidObj;

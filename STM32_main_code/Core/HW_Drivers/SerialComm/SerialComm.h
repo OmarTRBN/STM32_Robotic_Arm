@@ -13,6 +13,7 @@
 
 #define SERIALCOMM_UART &huart1
 #define SERIALCOMM_BUFF_SIZE 1000
+
 typedef enum {
     SERIALCOMM_OK = 0,
     SERIALCOMM_ERROR,

@@ -10,6 +10,10 @@
 
 #include "main.h"
 
+#define CMD_SET_KP              ( ('K'<<8) | 'P') // "KP"
+#define CMD_SET_KI              ( ('K'<<8) | 'I') // "KI"
+#define CMD_SET_KD              ( ('K'<<8) | 'D') // "KD"
+
 #define SETPOINT_MIN 1100.0f
 #define SETPOINT_MAX 3000.0f
 
@@ -48,11 +52,11 @@ typedef struct {
 } MultivariablePID;
 
 void MultivariablePID_Init(MultivariablePID *pid);
+
 void MultivariablePID_SetSetpoint(MultivariablePID *pid, float32_t *setpoint);
 void MultivariablePID_Compute(MultivariablePID *pid, float32_t *meas);
-void MultivariablePID_SetParameter(MultivariablePID *pid, float32_t *new_matrix, uint16_t chosen_param);
 
-uint8_t ParsePIDParametersFromUART(MultivariablePID *pid, char *uart_str, uint16_t len);
+void MultivariablePID_SetParameter(MultivariablePID *pid, float32_t *new_matrix, uint16_t chosen_param);
 
 void MultivariablePID_Reset(MultivariablePID *pid);
 

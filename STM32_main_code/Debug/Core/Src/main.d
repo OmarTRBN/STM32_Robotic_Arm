@@ -51,10 +51,7 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor.h \
  C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor_Def.h \
  C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/lut.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h \
- ../Core/Inc/CommandProtocol.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/DWT_Timing/Timing.h \
- ../Core/Controllers/Trajectory.h
+ C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -113,6 +110,3 @@ C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Driver
 C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor_Def.h:
 C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/lut.h:
 C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h:
-../Core/Inc/CommandProtocol.h:
-C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/DWT_Timing/Timing.h:
-../Core/Controllers/Trajectory.h:

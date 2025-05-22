@@ -15,7 +15,7 @@ function sendControllerParameters(serialObj, params, prefix)
     % Convert to flat array with comma separation
     param_str = matrixToFlatString(params);
     pid_msg = ['CP', prefix, param_str];
-
+    
     try
         % Send data through serial port
         writeline(serialObj, pid_msg);

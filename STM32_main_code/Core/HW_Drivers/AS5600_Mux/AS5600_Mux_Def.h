@@ -19,9 +19,8 @@
 
 #define AS5600_MUX_MAX_CHANNELS 8
 #define AS5600_MUX_TIMEOUT 10
+#define AS5600_MUX_DEFAULT_HANDLE 2048
 
-#define AS5600_MUX_DMA_RUN 1
-#define AS5600_MUX_DMA_STOP  0
 #define AS5600_MUX_INITIALIZED 1
 #define AS5600_MUX_NOT_INITIALIZED 0
 
@@ -31,25 +30,12 @@ typedef enum {
 	AS5600_MUX_NONE
 } AS5600_MUX_StatusTypeDef;
 
-typedef enum {
-	AS5600_MUX_DMA_IDLE,
-	AS5600_MUX_DMA_READY,
-	AS5600_MUX_READ_AS5600,
-	AS5600_MUX_DMA_DONE
-} AS5600_MUX_DMA_LoopStateTypeDef;
-
 typedef struct {
     bool is_initialized;
 
-	bool dma_mode_start_stop;
-	volatile bool dma_busy;
-	volatile uint8_t dma_current_channel;
-    uint8_t dma_buffer[2];
-    AS5600_MUX_DMA_LoopStateTypeDef dma_loop_state;
-
 	uint8_t num_channels;
-    uint16_t channel_raw_values[AS5600_MUX_MAX_CHANNELS];
     AS5600_MUX_StatusTypeDef channel_states[AS5600_MUX_MAX_CHANNELS];
+    uint16_t channel_raw_values[AS5600_MUX_MAX_CHANNELS];
 } AS5600_MUX_HandleTypeDef;
 
 #endif /* HW_DRIVERS_AS5600_MUX_AS5600_MUX_DEF_H_ */

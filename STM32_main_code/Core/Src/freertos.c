@@ -69,6 +69,11 @@ const osThreadAttr_t controllerTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for as5600 */
+osMutexId_t as5600Handle;
+const osMutexAttr_t as5600_attributes = {
+  .name = "as5600"
+};
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -90,6 +95,9 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
 
   /* USER CODE END Init */
+  /* Create the mutex(es) */
+  /* creation of as5600 */
+  as5600Handle = osMutexNew(&as5600_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -163,10 +171,9 @@ void ReadAs5600Task(void *argument)
   /* Infinite loop */
   for(;;)
   {
+	  osMutexAcquire(as5600Handle, osWaitForever);
 	  appMuxStatus = AS5600_MUX_ReadAllPolling(&appMuxHandle);
-	  for (uint8_t i = 0; i < appMuxHandle.num_channels; i++) {
-		  q_meas[i] = appMuxHandle.channel_raw_values[i];
-	  }
+	  osMutexRelease(as5600Handle);
 
 	  vTaskDelayUntil(&xLastWakeTime, xPeriodTicks);
   }
@@ -185,14 +192,20 @@ void RunControllerTask(void *argument)
   /* USER CODE BEGIN RunControllerTask */
 	TickType_t xLastWakeTime;
 	const TickType_t xPeriodTicks = FREQ_TO_TICKS(APP_CONTROLLER_FREQ);
-	appPidObj.dt = 1.0f / ((float) APP_CONTROLLER_FREQ);
 
 	xLastWakeTime = xTaskGetTickCount();
   /* Infinite loop */
   for(;;)
   {
 	  MultivariablePID_SetSetpoint(&appPidObj, q_set);
-	  MultivariablePID_Compute(&appPidObj, q_meas);
+
+      osMutexAcquire(as5600Handle, osWaitForever);
+      for (uint8_t i = 0; i < appMuxHandle.num_channels; i++) {
+          q_meas[i] = appMuxHandle.channel_raw_values[i];
+      }
+      osMutexRelease(as5600Handle);
+
+      MultivariablePID_Compute(&appPidObj, q_meas);
 
 	  for (int i=0; i<NUM_MOTORS; i++) {
 		  q_out[i] = appPidObj.output_data[i];

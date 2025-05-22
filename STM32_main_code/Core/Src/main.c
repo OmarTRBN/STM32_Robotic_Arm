@@ -29,13 +29,9 @@
 /* USER CODE BEGIN Includes */
 #include "app.h"
 
-#include "CommandProtocol.h"
-#include "Timing.h"
-
-#include "PID_Control.h"
-#include "Trajectory.h"
-
-//#include "app.h"
+//#include "Timing.h"
+//
+//#include "Trajectory.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +41,9 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define CMD_TEST_LED	        ( ('T'<<8) | 'L') // "TL" Test LED
+#define CMD_STEP_MOTOR_STATE 	( ('M'<<8) | 'S') // "MS" Motor State
+#define CMD_SET_PARAM			( ('C'<<8) | 'P') // "CP" Controller Parameters
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -71,7 +69,7 @@
 //float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
 //MultivariablePID pidObj;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-Trajectory robotTraj;
+//Trajectory robotTraj;
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 /* USER CODE END PV */
 
@@ -97,7 +95,6 @@ int main(void)
 
   /* USER CODE BEGIN 1 */
 	SerialComm_SetCommandCallback(MyProcessCommand);
-//  CommandProtocol_SetCommandProcessor(MyProcessCommand);
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -113,7 +110,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-  DWT_Init();
+//  DWT_Init();
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -135,13 +132,9 @@ int main(void)
 
   /*🥊🥊🥊 PID Control 🥊🥊🥊*/
   MultivariablePID_Init(&appPidObj);
+  appPidObj.dt = 1.0f / ((float) APP_CONTROLLER_FREQ);
 
-//  statusCheck = CommandProtocol_Init(&cmdHandle, &huart1, 100);
-//
-//
 //  Trajectory_Init(&robotTraj);
-
-//  volatile uint32_t lastTime = 0; uint32_t interval = 4;
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -157,14 +150,11 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-//  appMuxStatus = AS5600_MUX_StartStopDMA(&appMuxHandle, AS5600_MUX_DMA_RUN);
-//  HAL_TIM_Base_Start_IT(&htim11); // Start controller timer
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-//	  AS5600_MUX_LoopDMA(&muxHandle);
 //	  if(globalControllerFlag)
 //	  {
 //		  globalControllerFlag = 0;
@@ -241,53 +231,96 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_I2C_MemRxCpltCallback(I2C_HandleTypeDef *hi2c) {
-    if (hi2c->Instance == I2C1) {
-    	AS5600_MUX_MemRxCpltCallback(&appMuxHandle);
+uint8_t ParsePIDParametersFromUART(MultivariablePID *pid, char *uart_str, uint16_t len) {
+    if (pid == NULL || uart_str == NULL || len == 0) return 0;
+
+    // Make sure the string is null-terminated
+    if (uart_str[len-1] != '\0') {
+        if (len >= SERIALCOMM_BUFF_SIZE) {
+            // String too long, can't safely null-terminate
+            return 0;
+        }
+        uart_str[len] = '\0';
     }
-}
-void HAL_I2C_MasterTxCpltCallback(I2C_HandleTypeDef *hi2c) {
-    if (hi2c->Instance == I2C1) {
-    	AS5600_MUX_TxCpltCallback(&appMuxHandle);
-	}
+
+    float32_t parsed_values[NUM_JOINTS*NUM_JOINTS];
+    for (int i = 0; i < NUM_JOINTS*NUM_JOINTS; i++) {
+        parsed_values[i] = 0.0f;
+    }
+
+    // Determine which parameter is being updated
+    uint16_t chosen_param;
+    char *data_start = NULL;
+
+    if (strncmp(uart_str, "KP", 2) == 0) {
+        chosen_param = CMD_SET_KP;
+    }
+    else if (strncmp(uart_str, "KI", 2) == 0) {
+        chosen_param = CMD_SET_KI;
+    }
+    else if (strncmp(uart_str, "KD", 2) == 0) {
+        chosen_param = CMD_SET_KD;
+    }
+    else {
+        // Unrecognized parameter
+        return 0;
+    }
+    data_start = uart_str + 2;
+
+    // Parse the comma-separated values
+    char *token;
+    char *rest = data_start;
+    int index = 0;
+
+    while ((token = strtok_r(rest, ",", &rest)) != NULL && index < NUM_JOINTS*NUM_JOINTS) {
+        // Convert the token to float
+        parsed_values[index] = (float32_t)atof(token);
+        index++;
+    }
+
+    // Check if we received the expected number of values
+    if (index != NUM_JOINTS*NUM_JOINTS) {
+        // Invalid number of parameters
+        return 0;
+    }
+
+    // Update the PID parameters
+    MultivariablePID_SetParameter(pid, parsed_values, chosen_param);
+
+    return 1;
 }
 void MyProcessCommand(SerialComm_HandleTypeDef* hserial) {
 	// Combine the first two characters into a 16-bit integer
 	uint16_t encodedCommand = (hserial->pRxBuffer[0] << 8) | hserial->pRxBuffer[1];
-//    char response[50];
+    char response[50];
 
     switch(encodedCommand) { // First 2 bytes are command
         case CMD_TEST_LED:
             HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
-//            CommandProtocol_SendResponse(handle, "LED TOGGLED!\n");
+            SerialComm_SendResponse(hserial, "LED TOGGLED!\n");
             break;
 
-//        case CMD_STEP_MOTOR_STATE:
-//			int index = handle->rxBuffer[2] - '0'; // Convert char to int by subtracting '0'
-//			char state = handle->rxBuffer[3];
-//
-//			if (state == '1') {
-//				StepMotor_Enable(motorArray[index]);
-//			}
-//			else {
-//				StepMotor_Disable(motorArray[index]);
-//			}
-//			sprintf(response, "Motor %d is at state %c\n", index, state);
-//			CommandProtocol_SendResponse(handle, response);
-//			break;
+        case CMD_STEP_MOTOR_STATE:
+			int index = hserial->pRxBuffer[2] - '0'; // Convert char to int by subtracting '0'
+			int state = hserial->pRxBuffer[3] - '0';
 
-//        case CMD_SET_PARAM:
-//			char paramType[3] = {handle->rxBuffer[2], handle->rxBuffer[3], '\0'};
-//			char *recievedShit = (char *)&handle->rxBuffer[2];
-//
-//			if (ParsePIDParametersFromUART(&pidObj, recievedShit, strlen(recievedShit))) {
-//				sprintf(response, "PID %s parameters updated successfully.\n", paramType);
-//			}
-//			else {
-//				sprintf(response, "Error: Failed to parse PID %s parameters!\n", paramType);
-//			}
-//			CommandProtocol_SendResponse(handle, response);
-//			break;
+			STEPMOTOR_EnableControl(&appStepMotors[index], state);
+			sprintf(response, "Motor %d is at state %c\n", index, state);
+			SerialComm_SendResponse(hserial, response);
+			break;
+
+        case CMD_SET_PARAM:
+			char paramType[3] = {hserial->pRxBuffer[2], hserial->pRxBuffer[3], '\0'};
+			char *recievedShit = (char *)&hserial->pRxBuffer[2];
+
+			if (ParsePIDParametersFromUART(&appPidObj, recievedShit, strlen(recievedShit))) {
+				sprintf(response, "PID %s parameters updated successfully.\n", paramType);
+			}
+			else {
+				sprintf(response, "Error: Failed to parse PID %s parameters!\n", paramType);
+			}
+			SerialComm_SendResponse(hserial, response);
+			break;
 
 //        case CMD_SET_TRAJ_COEFF:
 //        	if (Trajectory_ParseCoeffs((char*)handle->rxBuffer, &robotTraj) == HAL_OK)
@@ -318,20 +351,11 @@ void MyProcessCommand(SerialComm_HandleTypeDef* hserial) {
     }
 }
 
-//void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-//{
-//	if (huart == cmdHandle.huart) {
-//		uint8_t receivedByte = cmdHandle.rxBuffer[cmdHandle.rxIndex];
-//		CommandProtocol_ProcessByte(&cmdHandle, receivedByte);
-//		HAL_UART_Receive_IT(huart, &cmdHandle.rxBuffer[cmdHandle.rxIndex], 1);
-//	}
-//}
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
     if (huart == SERIALCOMM_UART) {
         SerialComm_RxCpltCallback(&appSerialHandle);
     }
 }
-
 /* USER CODE END 4 */
 
 /**

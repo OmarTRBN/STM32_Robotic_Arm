@@ -13,14 +13,8 @@
 #include "main.h"
 #include "i2c.h"
 
-AS5600_MUX_StatusTypeDef AS5600_MUX_Init(AS5600_MUX_HandleTypeDef *, uint8_t);
-
-AS5600_MUX_StatusTypeDef AS5600_MUX_StartStopDMA(AS5600_MUX_HandleTypeDef *, bool);
-AS5600_MUX_StatusTypeDef AS5600_MUX_LoopDMA(AS5600_MUX_HandleTypeDef *);
-void AS5600_MUX_MemRxCpltCallback(AS5600_MUX_HandleTypeDef *);
-void AS5600_MUX_TxCpltCallback(AS5600_MUX_HandleTypeDef *);
+AS5600_MUX_StatusTypeDef AS5600_MUX_Init(AS5600_MUX_HandleTypeDef *handle, uint8_t num_of_sensors);
 
 AS5600_MUX_StatusTypeDef AS5600_MUX_ReadAllPolling(AS5600_MUX_HandleTypeDef *handle);
-AS5600_MUX_StatusTypeDef AS5600_MUX_ReadChannel(AS5600_MUX_HandleTypeDef *, uint8_t);
 
 #endif /* HW_DRIVERS_AS5600_MUX_AS5600_MUX_H_ */

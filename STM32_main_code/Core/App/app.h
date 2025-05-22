@@ -37,20 +37,10 @@ void App_InitMotors(void);
 /*🥊🥊🥊 Controller Variables 🥊🥊🥊*/
 #define APP_CONTROLLER_FREQ 100
 
-extern float q_set[NUM_MOTORS];
-extern float q_meas[NUM_MOTORS];
-extern float q_out[NUM_MOTORS];
+extern float q_set[NUM_JOINTS];
+extern float q_meas[NUM_JOINTS];
+extern float q_out[NUM_JOINTS];
 
 extern MultivariablePID appPidObj;
-
-#define CMD_PREFIX_KP "KP"
-#define CMD_PREFIX_KI "KI"
-#define CMD_PREFIX_KD "KD"
-#define CMD_SET_KP              ( ('K'<<8) | 'P') // "KP"
-#define CMD_SET_KI              ( ('K'<<8) | 'I') // "KI"
-#define CMD_SET_KD              ( ('K'<<8) | 'D') // "KD"
-
-#define MAX_UART_BUFFER 800
-
 
 #endif /* INC_APP_H_ */

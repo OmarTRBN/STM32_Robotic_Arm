@@ -42,9 +42,6 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-#define CMD_TEST_LED	        ( ('T'<<8) | 'L') // "TL" Test LED
-#define CMD_STEP_MOTOR_STATE 	( ('M'<<8) | 'S') // "MS" Motor State
-#define CMD_SET_PARAM			( ('C'<<8) | 'P') // "CP" Controller Parameters
 #define CMD_SET_TRAJ_COEFF      ( ('T'<<8) | 'C') // "TC" Trajectory Coefficients
 #define CMD_BEGIN_TRAJ          ( ('B'<<8) | 'T') // "BT" Begin Trajectory
 
@@ -65,7 +62,7 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-#define NUM_JOINTS 2
+#define NUM_JOINTS 4
 #define NUM_JOINTS_TRAJ 2
 #define TRAJ_POLY_TERMS 6
 #define TRAJ_COEFF_LEN NUM_JOINTS_TRAJ*TRAJ_POLY_TERMS

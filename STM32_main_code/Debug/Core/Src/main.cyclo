@@ -1,8 +1,7 @@
-../Core/Src/main.c:254:6:MyProcessCommand	2
-../Core/Src/main.c:202:6:SystemClock_Config	3
-../Core/Src/main.c:95:5:main	1
-../Core/Src/main.c:244:6:HAL_I2C_MemRxCpltCallback	2
-../Core/Src/main.c:249:6:HAL_I2C_MasterTxCpltCallback	2
-../Core/Src/main.c:329:6:HAL_UART_RxCpltCallback	2
-../Core/Src/main.c:345:6:HAL_TIM_PeriodElapsedCallback	2
-../Core/Src/main.c:363:6:Error_Handler	1
+../Core/Src/main.c:192:6:SystemClock_Config	3
+../Core/Src/main.c:93:5:main	1
+../Core/Src/main.c:234:9:ParsePIDParametersFromUART	15
+../Core/Src/main.c:292:6:MyProcessCommand	5
+../Core/Src/main.c:354:6:HAL_UART_RxCpltCallback	2
+../Core/Src/main.c:369:6:HAL_TIM_PeriodElapsedCallback	2
+../Core/Src/main.c:387:6:Error_Handler	1
