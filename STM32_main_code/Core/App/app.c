@@ -10,7 +10,8 @@
 /* 🥊🥊🥊 Serial Communication 🥊🥊🥊 */
 SerialComm_HandleTypeDef appSerialHandle;
 SerialComm_StatusTypeDef appSerialStatus;
-uint8_t appSerialDataArray[SERIALCOMM_BUFF_SIZE] = {0};
+uint8_t appSerialRxArray[SERIALCOMM_RX_BUFF_SIZE] = {0};
+uint8_t appSerialTxArray[SERIALCOMM_TX_BUFF_SIZE] = {0};
 
 /* 🥊🥊🥊 Encoders 🥊🥊🥊 */
 AS5600_MUX_HandleTypeDef appMuxHandle;

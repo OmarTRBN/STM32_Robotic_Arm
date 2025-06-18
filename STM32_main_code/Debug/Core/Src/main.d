@@ -44,14 +44,14 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/dma.h ../Core/Inc/main.h ../Core/Inc/i2c.h ../Core/Inc/tim.h \
  ../Core/Inc/usart.h ../Core/Inc/gpio.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/App/app.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/SerialComm/SerialComm.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux_Def.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor_Def.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/lut.h \
- C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/App/app.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/SerialComm/SerialComm.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux_Def.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor_Def.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/lut.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -102,11 +102,11 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/tim.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/gpio.h:
-C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/App/app.h:
-C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/SerialComm/SerialComm.h:
-C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux.h:
-C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux_Def.h:
-C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor.h:
-C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor_Def.h:
-C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/HW_Drivers/StepMotor/lut.h:
-C:/Users/omart/Desktop/Projects/STM32_Robotic_Arm/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/App/app.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/SerialComm/SerialComm.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux_Def.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor_Def.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/lut.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h:

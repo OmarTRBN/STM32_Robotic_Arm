@@ -6,7 +6,6 @@
 "./Core/HW_Drivers/SerialComm/SerialComm.o"
 "./Core/HW_Drivers/StepMotor/StepMotor.o"
 "./Core/HW_Drivers/StepMotor/lut.o"
-"./Core/Src/CommandProtocol.o"
 "./Core/Src/dma.o"
 "./Core/Src/freertos.o"
 "./Core/Src/gpio.o"

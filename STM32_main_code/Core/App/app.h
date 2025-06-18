@@ -18,7 +18,8 @@
 /* 🥊🥊🥊 Serial Communication 🥊🥊🥊 */
 extern SerialComm_HandleTypeDef appSerialHandle;
 extern SerialComm_StatusTypeDef appSerialStatus;
-extern uint8_t appSerialDataArray[SERIALCOMM_BUFF_SIZE];
+extern uint8_t appSerialRxArray[SERIALCOMM_RX_BUFF_SIZE];
+extern uint8_t appSerialTxArray[SERIALCOMM_TX_BUFF_SIZE];
 
 /* 🥊🥊🥊 Encoders 🥊🥊🥊 */
 #define APP_ENCODER_FREQ 250
@@ -27,7 +28,7 @@ extern AS5600_MUX_HandleTypeDef appMuxHandle;
 extern AS5600_MUX_StatusTypeDef appMuxStatus;
 
 /*🥊🥊🥊 Motors 🥊🥊🥊*/
-#define NUM_MOTORS 2
+#define NUM_MOTORS 1
 
 extern STEPMOTOR_HandleTypeDef appStepMotors[NUM_MOTORS];
 extern STEPMOTOR_StatusTypeDef appStepMotorStatus;

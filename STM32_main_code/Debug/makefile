@@ -71,8 +71,8 @@ all: main-build
 main-build: ra_main.elf secondary-outputs
 
 # Tool invocations
-ra_main.elf ra_main.map: $(OBJS) $(USER_OBJS) C:\Users\omart\Desktop\Projects\STM32_Robotic_Arm\STM32_main_code\STM32F411CEUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "ra_main.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\omart\Desktop\Projects\STM32_Robotic_Arm\STM32_main_code\STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ra_main.map" -Wl,--gc-sections -static -L../Middlewares/ST/ARM/DSP/Lib --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
+ra_main.elf ra_main.map: $(OBJS) $(USER_OBJS) /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/STM32F411CEUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "ra_main.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/STM32F411CEUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="ra_main.map" -Wl,--gc-sections -static -L../Middlewares/ST/ARM/DSP/Lib --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -u _scanf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

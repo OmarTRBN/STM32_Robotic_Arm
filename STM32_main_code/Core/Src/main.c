@@ -28,7 +28,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "app.h"
-
 //#include "Timing.h"
 //
 //#include "Trajectory.h"
@@ -41,9 +40,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define CMD_TEST_LED	        ( ('T'<<8) | 'L') // "TL" Test LED
-#define CMD_STEP_MOTOR_STATE 	( ('M'<<8) | 'S') // "MS" Motor State
-#define CMD_SET_PARAM			( ('C'<<8) | 'P') // "CP" Controller Parameters
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -54,6 +51,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+//char response[50];
+
 // 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 //char globalDataArray[1100];
 //volatile uint8_t globalControllerFlag = 0;
@@ -122,8 +121,8 @@ int main(void)
   MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
   /* 🥊🥊🥊 Serial Communication 🥊🥊🥊 */
-  appSerialStatus = SerialComm_Init(&appSerialHandle, appSerialDataArray, SERIALCOMM_BUFF_SIZE, 1000);
-
+  appSerialStatus = SerialComm_Init(&appSerialHandle, appSerialRxArray, appSerialTxArray);
+//  HAL_UART_Receive_DMA(&huart1, &appSerialRxArray[appSerialHandle.rxIndex++], 1);
   /* 🥊🥊🥊 Encoders 🥊🥊🥊 */
   appMuxStatus = AS5600_MUX_Init(&appMuxHandle, NUM_MOTORS);
 
@@ -236,7 +235,7 @@ uint8_t ParsePIDParametersFromUART(MultivariablePID *pid, char *uart_str, uint16
 
     // Make sure the string is null-terminated
     if (uart_str[len-1] != '\0') {
-        if (len >= SERIALCOMM_BUFF_SIZE) {
+        if (len >= SERIALCOMM_RX_BUFF_SIZE) {
             // String too long, can't safely null-terminate
             return 0;
         }
@@ -289,73 +288,17 @@ uint8_t ParsePIDParametersFromUART(MultivariablePID *pid, char *uart_str, uint16
 
     return 1;
 }
-void MyProcessCommand(SerialComm_HandleTypeDef* hserial) {
-	// Combine the first two characters into a 16-bit integer
-	uint16_t encodedCommand = (hserial->pRxBuffer[0] << 8) | hserial->pRxBuffer[1];
-    char response[50];
-
-    switch(encodedCommand) { // First 2 bytes are command
-        case CMD_TEST_LED:
-            HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
-            SerialComm_SendResponse(hserial, "LED TOGGLED!\n");
-            break;
-
-        case CMD_STEP_MOTOR_STATE:
-			int index = hserial->pRxBuffer[2] - '0'; // Convert char to int by subtracting '0'
-			int state = hserial->pRxBuffer[3] - '0';
-
-			STEPMOTOR_EnableControl(&appStepMotors[index], state);
-			sprintf(response, "Motor %d is at state %c\n", index, state);
-			SerialComm_SendResponse(hserial, response);
-			break;
-
-        case CMD_SET_PARAM:
-			char paramType[3] = {hserial->pRxBuffer[2], hserial->pRxBuffer[3], '\0'};
-			char *recievedShit = (char *)&hserial->pRxBuffer[2];
-
-			if (ParsePIDParametersFromUART(&appPidObj, recievedShit, strlen(recievedShit))) {
-				sprintf(response, "PID %s parameters updated successfully.\n", paramType);
-			}
-			else {
-				sprintf(response, "Error: Failed to parse PID %s parameters!\n", paramType);
-			}
-			SerialComm_SendResponse(hserial, response);
-			break;
-
-//        case CMD_SET_TRAJ_COEFF:
-//        	if (Trajectory_ParseCoeffs((char*)handle->rxBuffer, &robotTraj) == HAL_OK)
-//        	{
-//				CommandProtocol_SendResponse(handle, "Trajectory coefficients received.\n");
-//			}
-//        	else
-//        	{
-//				CommandProtocol_SendResponse(handle, "Error parsing trajectory data.\n");
-//			}
-//        	break;
+//		case CMD_SET_PARAM:
+//			char paramType[3] = {hserial->pRxBuffer[2], hserial->pRxBuffer[3], '\0'};
+//			char *recievedShit = (char *)&hserial->pRxBuffer[2];
 //
-//        case CMD_BEGIN_TRAJ:
-//        	Trajectory_Start(&robotTraj);
-//        	sprintf(response, "Trajectory started.\n");
-//			CommandProtocol_SendResponse(handle, response);
-//        	break;
-
-//        case CMD_AS5600_DATA:
-////            sprintf(response, "AS5600 Angles: %d, %d\n", sensors.angles[0], sensors.angles[1]);
-//            CommandProtocol_SendResponse(handle, response);
-//            break;
-
-        default:
-//            sprintf(response, "Unknown command: %d\n", encodedCommand);
-//        	CommandProtocol_SendResponse(handle, response);
-        	break;
-    }
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    if (huart == SERIALCOMM_UART) {
-        SerialComm_RxCpltCallback(&appSerialHandle);
-    }
-}
+//			if (ParsePIDParametersFromUART(&appPidObj, recievedShit, strlen(recievedShit))) {
+//				sprintf((char *)hserial->pTxBuffer, "PID %s parameters updated successfully.\n", paramType);
+//			}
+//			else {
+//				sprintf((char *)hserial->pTxBuffer, "Error: Failed to parse PID %s parameters!\n", paramType);
+//			}
+//			break;
 /* USER CODE END 4 */
 
 /**
