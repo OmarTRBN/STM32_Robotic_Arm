@@ -29,8 +29,6 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- ../Middlewares/ST/ARM/DSP/Inc/arm_math.h \
- ../Drivers/CMSIS/Include/cmsis_compiler.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h \
  ../Core/Inc/FreeRTOSConfig.h \
@@ -44,14 +42,23 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os2.h \
  ../Core/Inc/dma.h ../Core/Inc/main.h ../Core/Inc/i2c.h ../Core/Inc/tim.h \
  ../Core/Inc/usart.h ../Core/Inc/gpio.h \
- /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/App/app.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/app_includes.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/app.h \
  /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/SerialComm/SerialComm.h \
  /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux.h \
  /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux_Def.h \
  /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor.h \
  /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor_Def.h \
  /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/lut.h \
- /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/app_config.h \
+ ../Middlewares/ST/ARM/DSP/Inc/arm_math.h \
+ ../Drivers/CMSIS/Include/cmsis_compiler.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Controllers/TrajectoryGen/Trajectory.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/app_config.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/main_init.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/app_includes.h \
+ /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/ParserFunctions/parserFcns.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -83,8 +90,6 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
-../Middlewares/ST/ARM/DSP/Inc/arm_math.h:
-../Drivers/CMSIS/Include/cmsis_compiler.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS_V2/cmsis_os.h:
 ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h:
 ../Core/Inc/FreeRTOSConfig.h:
@@ -102,7 +107,8 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Inc/tim.h:
 ../Core/Inc/usart.h:
 ../Core/Inc/gpio.h:
-/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/App/app.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/app_includes.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/app.h:
 /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/SerialComm/SerialComm.h:
 /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux.h:
 /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/AS5600_Mux/AS5600_Mux_Def.h:
@@ -110,3 +116,11 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/StepMotor_Def.h:
 /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/HW_Drivers/StepMotor/lut.h:
 /Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Controllers/Multivariable_PID/PID_Control.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/app_config.h:
+../Middlewares/ST/ARM/DSP/Inc/arm_math.h:
+../Drivers/CMSIS/Include/cmsis_compiler.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Controllers/TrajectoryGen/Trajectory.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/app_config.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/main_init.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/App/app_includes.h:
+/Users/omarmac/Desktop/Projects/stm32_robot/STM32_main_code/Core/Application/ParserFunctions/parserFcns.h:

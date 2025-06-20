@@ -1,8 +1,9 @@
-../Core/Src/freertos.c:272:6:DataTxFcn	1
-../Core/Src/freertos.c:208:6:ReadAs5600Task	2
-../Core/Src/freertos.c:235:6:RunControllerTask	1
-../Core/Src/freertos.c:178:6:StartDefaultTask	5
-../Core/Src/freertos.c:117:6:MX_FREERTOS_Init	1
-../Core/Src/freertos.c:295:6:MyProcessCommand	3
-../Core/Src/freertos.c:324:6:HAL_UART_TxCpltCallback	2
-../Core/Src/freertos.c:329:6:HAL_UART_RxCpltCallback	2
+../Core/Src/freertos.c:291:6:DataTxFcn	1
+../Core/Src/freertos.c:223:6:ReadAs5600Task	2
+../Core/Src/freertos.c:319:6:TrajFcn	1
+../Core/Src/freertos.c:250:6:RunControllerTask	3
+../Core/Src/freertos.c:193:6:StartDefaultTask	8
+../Core/Src/freertos.c:126:6:MX_FREERTOS_Init	1
+../Core/Src/freertos.c:357:6:MyProcessCommand	6
+../Core/Src/freertos.c:388:6:HAL_UART_TxCpltCallback	2
+../Core/Src/freertos.c:393:6:HAL_UART_RxCpltCallback	2

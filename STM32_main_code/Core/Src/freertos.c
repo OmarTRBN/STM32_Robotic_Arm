@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "app.h"
+#include "app_includes.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,11 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SENSOR_FREQ_HZ  200
 
-#define CMD_TEST_LED	        ( ('T'<<8) | 'L') // "TL" Test LED
-#define CMD_STEP_MOTOR_STATE 	( ('M'<<8) | 'S') // "MS" Motor State
-#define CMD_SET_PARAM			( ('C'<<8) | 'P') // "CP" Controller Parameters
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -81,6 +77,13 @@ const osThreadAttr_t DataTxTask_attributes = {
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow,
 };
+/* Definitions for TrajTask */
+osThreadId_t TrajTaskHandle;
+const osThreadAttr_t TrajTask_attributes = {
+  .name = "TrajTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityLow,
+};
 /* Definitions for as5600 */
 osMutexId_t as5600Handle;
 const osMutexAttr_t as5600_attributes = {
@@ -90,6 +93,11 @@ const osMutexAttr_t as5600_attributes = {
 osMutexId_t uartMutexHandle;
 const osMutexAttr_t uartMutex_attributes = {
   .name = "uartMutex"
+};
+/* Definitions for qArraysMutex */
+osMutexId_t qArraysMutexHandle;
+const osMutexAttr_t qArraysMutex_attributes = {
+  .name = "qArraysMutex"
 };
 /* Definitions for uartSem */
 osSemaphoreId_t uartSemHandle;
@@ -106,6 +114,7 @@ void StartDefaultTask(void *argument);
 void ReadAs5600Task(void *argument);
 void RunControllerTask(void *argument);
 void DataTxFcn(void *argument);
+void TrajFcn(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -124,6 +133,9 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of uartMutex */
   uartMutexHandle = osMutexNew(&uartMutex_attributes);
+
+  /* creation of qArraysMutex */
+  qArraysMutexHandle = osMutexNew(&qArraysMutex_attributes);
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
@@ -158,6 +170,9 @@ void MX_FREERTOS_Init(void) {
   /* creation of DataTxTask */
   DataTxTaskHandle = osThreadNew(DataTxFcn, NULL, &DataTxTask_attributes);
 
+  /* creation of TrajTask */
+  TrajTaskHandle = osThreadNew(TrajFcn, NULL, &TrajTask_attributes);
+
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -182,7 +197,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  if (appSerialHandle.responseReadyFlag) {
+	  if (appSerialHandle.responseReadyFlag == 1) {
 		  MyProcessCommand(&appSerialHandle);
 		  if (osMutexAcquire(uartMutexHandle, osWaitForever) == osOK) {
 			  SerialComm_Transmit(&appSerialHandle);
@@ -242,21 +257,25 @@ void RunControllerTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-//	  MultivariablePID_SetSetpoint(&appPidObj, q_set);
-//
-//      osMutexAcquire(as5600Handle, osWaitForever);
-//      for (uint8_t i = 0; i < appMuxHandle.num_channels; i++) {
-//          q_meas[i] = appMuxHandle.channel_raw_values[i];
-//      }
-//      osMutexRelease(as5600Handle);
-//
-//      MultivariablePID_Compute(&appPidObj, q_meas);
-//
-//	  for (int i=0; i<NUM_MOTORS; i++) {
-//		  q_out[i] = appPidObj.output_data[i];
-//	  }
-//
-//	  STEPMOTOR_MultiSetSpeed(appStepMotors, q_out, NUM_MOTORS);
+	  // Set new reference angles
+	  MultivariablePID_SetSetpoint(&appPidObj, q_set);
+
+	  // Update measurements
+      osMutexAcquire(as5600Handle, osWaitForever);
+      for (uint8_t i = 0; i < appMuxHandle.num_channels; i++) {
+          q_meas[i] = appMuxHandle.channel_raw_values[i];
+      }
+      osMutexRelease(as5600Handle);
+
+      // Compute PID Controller
+      MultivariablePID_Compute(&appPidObj, q_meas);
+	  for (int i=0; i<NUM_JOINTS; i++) {
+		  q_out[i] = appPidObj.output_data[i];
+	  }
+
+	  // Send signals to motors
+	  STEPMOTOR_MultiSetSpeed(appStepMotors, q_out, NUM_JOINTS);
+
 	  vTaskDelayUntil(&xLastWakeTime, xPeriodTicks);
   }
   /* USER CODE END RunControllerTask */
@@ -290,32 +309,77 @@ void DataTxFcn(void *argument)
   /* USER CODE END DataTxFcn */
 }
 
+/* USER CODE BEGIN Header_TrajFcn */
+/**
+* @brief Function implementing the TrajTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_TrajFcn */
+void TrajFcn(void *argument)
+{
+  /* USER CODE BEGIN TrajFcn */
+	TickType_t xLastWakeTime;
+	const TickType_t xPeriodTicks = FREQ_TO_TICKS(APP_TRAJ_FREQ);
+//	char buf[16];
+//	uint8_t len;
+//	uint32_t i = 0; // Counter for sine wave phase
+////	const float PI = 3.1415926535f; // Define PI
+//	const uint16_t AMPLITUDE = 2047; // Half of 4095 (peak to peak)
+//	const uint16_t OFFSET = 2048;   // Center of the sine wave (0-4095 range)
+
+  /* Infinite loop */
+  for(;;)
+  {
+      // Calculate sine wave value
+      // The sine function returns values from -1 to 1.
+      // We scale it by AMPLITUDE, then add OFFSET to shift it to 0-4095.
+      // i is incremented to change the phase over time.
+//      uint16_t val = (uint16_t)(AMPLITUDE * sinf(i * (2 * PI / 100.0f)) + OFFSET); // 100.0f controls the speed/frequency of the sine wave
+//
+//	  len = sprintf(buf, "<s>%d<e>\n", val);
+//
+//	  if (osMutexAcquire(uartMutexHandle, osWaitForever) == osOK) {
+//
+//		  HAL_UART_Transmit_DMA(&huart1, (uint8_t*)buf, len);
+//		  osSemaphoreAcquire(uartSemHandle, osWaitForever);
+//
+//		  osMutexRelease(uartMutexHandle);
+//	  }
+
+	vTaskDelayUntil(&xLastWakeTime, xPeriodTicks);
+  }
+  /* USER CODE END TrajFcn */
+}
+
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
 void MyProcessCommand(SerialComm_HandleTypeDef* hserial) {
-	// Combine the first two characters into a 16-bit integer
-	// First 2 bytes are command
     uint8_t* data = hserial->pRxBuffer;
     uint16_t encodedCommand = (data[0] << 8) | data[1];
+
     memset(hserial->pTxBuffer, 0, hserial->txBufferSize);
 
-	switch(encodedCommand) {
-		case CMD_TEST_LED:
-			HAL_GPIO_TogglePin(TEST_LED_GPIO_Port, TEST_LED_Pin);
-			sprintf((char *)hserial->pTxBuffer, "LED toggled.\n");
-			break;
+    switch (encodedCommand) {
+        case CMD_TEST_LED:
+            Parse_CMD_TEST_LED(hserial);
+            break;
 
-		case CMD_STEP_MOTOR_STATE:
-			int index = hserial->pRxBuffer[2] - '0'; // Convert char to int by subtracting '0'
-			int state = hserial->pRxBuffer[3] - '0';
+        case CMD_MOTOR_STATE:
+            Parse_CMD_MOTOR_STATE(hserial);
+            break;
 
-			STEPMOTOR_EnableControl(&appStepMotors[index], state);
-			sprintf((char *)hserial->pTxBuffer, "Motor %d is at state %d\n", index, state);
-			break;
+        case CMD_MOTOR_REF:
+            Parse_CMD_MOTOR_REF(hserial);
+            break;
 
-		default:
-			sprintf((char *)hserial->pTxBuffer, "Unknown command: 0x%04X ('%c%c')\n", encodedCommand, data[0], data[1]);
-			break;
+		case CMD_SET_PID:
+            Parse_CMD_SET_PID(hserial, &appPidObj);
+            break;
+
+        default:
+            sprintf((char *)hserial->pTxBuffer, "<d>Unknown command: 0x%04X ('%c%c')\n", encodedCommand, data[0], data[1]);
+            break;
     }
 
     memset(hserial->pRxBuffer, 0, hserial->rxBufferSize);

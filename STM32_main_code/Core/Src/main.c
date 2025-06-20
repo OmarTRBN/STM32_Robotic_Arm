@@ -27,10 +27,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "app.h"
-//#include "Timing.h"
-//
-//#include "Trajectory.h"
+#include "app_includes.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -76,13 +73,12 @@
 void SystemClock_Config(void);
 void MX_FREERTOS_Init(void);
 /* USER CODE BEGIN PFP */
-void MyProcessCommand(SerialComm_HandleTypeDef* hserial);
-//void setup_motors();
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
+
 /* USER CODE END 0 */
 
 /**
@@ -93,13 +89,14 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
-	SerialComm_SetCommandCallback(MyProcessCommand);
+
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+
+	HAL_Init();
 
   /* USER CODE BEGIN Init */
 
@@ -120,20 +117,7 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
-  /* 🥊🥊🥊 Serial Communication 🥊🥊🥊 */
-  appSerialStatus = SerialComm_Init(&appSerialHandle, appSerialRxArray, appSerialTxArray);
-//  HAL_UART_Receive_DMA(&huart1, &appSerialRxArray[appSerialHandle.rxIndex++], 1);
-  /* 🥊🥊🥊 Encoders 🥊🥊🥊 */
-  appMuxStatus = AS5600_MUX_Init(&appMuxHandle, NUM_MOTORS);
-
-  /*🥊🥊🥊 Motors 🥊🥊🥊*/
-  App_InitMotors();
-
-  /*🥊🥊🥊 PID Control 🥊🥊🥊*/
-  MultivariablePID_Init(&appPidObj);
-  appPidObj.dt = 1.0f / ((float) APP_CONTROLLER_FREQ);
-
-//  Trajectory_Init(&robotTraj);
+  App_Init();
   /* USER CODE END 2 */
 
   /* Init scheduler */
@@ -230,75 +214,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-uint8_t ParsePIDParametersFromUART(MultivariablePID *pid, char *uart_str, uint16_t len) {
-    if (pid == NULL || uart_str == NULL || len == 0) return 0;
 
-    // Make sure the string is null-terminated
-    if (uart_str[len-1] != '\0') {
-        if (len >= SERIALCOMM_RX_BUFF_SIZE) {
-            // String too long, can't safely null-terminate
-            return 0;
-        }
-        uart_str[len] = '\0';
-    }
-
-    float32_t parsed_values[NUM_JOINTS*NUM_JOINTS];
-    for (int i = 0; i < NUM_JOINTS*NUM_JOINTS; i++) {
-        parsed_values[i] = 0.0f;
-    }
-
-    // Determine which parameter is being updated
-    uint16_t chosen_param;
-    char *data_start = NULL;
-
-    if (strncmp(uart_str, "KP", 2) == 0) {
-        chosen_param = CMD_SET_KP;
-    }
-    else if (strncmp(uart_str, "KI", 2) == 0) {
-        chosen_param = CMD_SET_KI;
-    }
-    else if (strncmp(uart_str, "KD", 2) == 0) {
-        chosen_param = CMD_SET_KD;
-    }
-    else {
-        // Unrecognized parameter
-        return 0;
-    }
-    data_start = uart_str + 2;
-
-    // Parse the comma-separated values
-    char *token;
-    char *rest = data_start;
-    int index = 0;
-
-    while ((token = strtok_r(rest, ",", &rest)) != NULL && index < NUM_JOINTS*NUM_JOINTS) {
-        // Convert the token to float
-        parsed_values[index] = (float32_t)atof(token);
-        index++;
-    }
-
-    // Check if we received the expected number of values
-    if (index != NUM_JOINTS*NUM_JOINTS) {
-        // Invalid number of parameters
-        return 0;
-    }
-
-    // Update the PID parameters
-    MultivariablePID_SetParameter(pid, parsed_values, chosen_param);
-
-    return 1;
-}
-//		case CMD_SET_PARAM:
-//			char paramType[3] = {hserial->pRxBuffer[2], hserial->pRxBuffer[3], '\0'};
-//			char *recievedShit = (char *)&hserial->pRxBuffer[2];
-//
-//			if (ParsePIDParametersFromUART(&appPidObj, recievedShit, strlen(recievedShit))) {
-//				sprintf((char *)hserial->pTxBuffer, "PID %s parameters updated successfully.\n", paramType);
-//			}
-//			else {
-//				sprintf((char *)hserial->pTxBuffer, "Error: Failed to parse PID %s parameters!\n", paramType);
-//			}
-//			break;
 /* USER CODE END 4 */
 
 /**

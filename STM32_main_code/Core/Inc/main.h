@@ -37,18 +37,10 @@ extern "C" {
 #include <string.h>
 #include <stdbool.h>
 #include <math.h>
-
-#include "arm_math.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-#define CMD_SET_TRAJ_COEFF      ( ('T'<<8) | 'C') // "TC" Trajectory Coefficients
-#define CMD_BEGIN_TRAJ          ( ('B'<<8) | 'T') // "BT" Begin Trajectory
-
-
-
-#define CMD_AS5600_DATA    ( ('A'<<8) | 'B') // "AB"
 
 /* USER CODE END ET */
 
@@ -63,7 +55,6 @@ extern "C" {
 
 /* Exported macro ------------------------------------------------------------*/
 /* USER CODE BEGIN EM */
-#define NUM_JOINTS 4
 #define NUM_JOINTS_TRAJ 2
 #define TRAJ_POLY_TERMS 6
 #define TRAJ_COEFF_LEN NUM_JOINTS_TRAJ*TRAJ_POLY_TERMS

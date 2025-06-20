@@ -8,7 +8,8 @@
 #ifndef CONTROLLERS_PID_CONTROL_H_
 #define CONTROLLERS_PID_CONTROL_H_
 
-#include "main.h"
+#include "app_config.h"
+#include "arm_math.h"
 
 #define CMD_SET_KP              ( ('K'<<8) | 'P') // "KP"
 #define CMD_SET_KI              ( ('K'<<8) | 'I') // "KI"

@@ -1,4 +1,4 @@
-../Core/Controllers/Multivariable_PID/PID_Control.c:10:6:MultivariablePID_Init	24	static
+../Core/Controllers/Multivariable_PID/PID_Control.c:10:6:MultivariablePID_Init	8	static
 ../Core/Controllers/Multivariable_PID/PID_Control.c:47:6:MultivariablePID_SetSetpoint	0	static
 ../Core/Controllers/Multivariable_PID/PID_Control.c:62:6:MultivariablePID_Compute	24	static
 ../Core/Controllers/Multivariable_PID/PID_Control.c:101:6:MultivariablePID_SetParameter	0	static

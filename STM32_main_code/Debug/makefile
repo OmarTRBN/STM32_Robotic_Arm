@@ -20,9 +20,10 @@ RM := rm -rf
 -include Core/HW_Drivers/SerialComm/subdir.mk
 -include Core/HW_Drivers/DWT_Timing/subdir.mk
 -include Core/HW_Drivers/AS5600_Mux/subdir.mk
+-include Core/Controllers/TrajectoryGen/subdir.mk
 -include Core/Controllers/Multivariable_PID/subdir.mk
--include Core/Controllers/subdir.mk
--include Core/App/subdir.mk
+-include Core/Application/ParserFunctions/subdir.mk
+-include Core/Application/App/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)

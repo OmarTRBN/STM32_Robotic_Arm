@@ -1,6 +1,0 @@
-../Core/Controllers/Trajectory.c:59:6:Trajectory_Init	2
-../Core/Controllers/Trajectory.c:111:6:Trajectory_Start	2
-../Core/Controllers/Trajectory.c:123:6:Trajectory_Compute	10
-../Core/Controllers/Trajectory.c:164:6:Trajectory_SetCoefficients	4
-../Core/Controllers/Trajectory.c:176:6:Trajectory_SetDuration	9
-../Core/Controllers/Trajectory.c:190:19:Trajectory_ParseCoeffs	26
