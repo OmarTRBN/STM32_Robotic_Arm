@@ -9,7 +9,8 @@
 
 static const STEPMOTOR_HWConfig motor_hw_table[STEPMOTOR_MAX_CHANNELS] = {
     { &htim5, TIM_CHANNEL_1, M1_DIR_GPIO_Port, M1_DIR_Pin, M1_EN_GPIO_Port, M1_EN_Pin }, // Motor 1
-    { &htim9, TIM_CHANNEL_1, M2_DIR_GPIO_Port, M2_DIR_Pin, M2_EN_GPIO_Port, M2_EN_Pin }  // Motor 2
+    { &htim9, TIM_CHANNEL_1, M2_DIR_GPIO_Port, M2_DIR_Pin, M2_EN_GPIO_Port, M2_EN_Pin }, // Motor 2
+	{ &htim3, TIM_CHANNEL_1, M3_DIR_GPIO_Port, M2_DIR_Pin, M3_EN_GPIO_Port, M3_EN_Pin }
 };
 
 static inline void STEPMOTOR_WritePin(GPIO_TypeDef* port, uint16_t pin, GPIO_PinState state) {

@@ -1,7 +1,7 @@
 ../Core/Src/freertos.c:291:6:DataTxFcn	1
 ../Core/Src/freertos.c:223:6:ReadAs5600Task	2
 ../Core/Src/freertos.c:319:6:TrajFcn	1
-../Core/Src/freertos.c:250:6:RunControllerTask	3
+../Core/Src/freertos.c:250:6:RunControllerTask	5
 ../Core/Src/freertos.c:193:6:StartDefaultTask	8
 ../Core/Src/freertos.c:126:6:MX_FREERTOS_Init	1
 ../Core/Src/freertos.c:357:6:MyProcessCommand	6

@@ -12,7 +12,7 @@
 #define APP_CONTROLLER_FREQ 100
 #define APP_TRAJ_FREQ    	100
 
-#define NUM_JOINTS 			2
+#define NUM_JOINTS 			4
 
 #define CMD_TEST_LED	        ( ('T'<<8) | 'L') // "TL" Test LED
 #define CMD_MOTOR_STATE 		( ('M'<<8) | 'S') // "MS" Motor State
