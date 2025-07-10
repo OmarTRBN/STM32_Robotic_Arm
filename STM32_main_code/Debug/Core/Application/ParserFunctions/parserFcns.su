@@ -1,4 +1,4 @@
 ../Core/Application/ParserFunctions/parserFcns.c:10:6:Parse_CMD_TEST_LED	16	static
 ../Core/Application/ParserFunctions/parserFcns.c:15:6:Parse_CMD_MOTOR_STATE	16	static
 ../Core/Application/ParserFunctions/parserFcns.c:24:6:Parse_CMD_MOTOR_REF	16	static
-../Core/Application/ParserFunctions/parserFcns.c:43:9:Parse_CMD_SET_PID	112	static
+../Core/Application/ParserFunctions/parserFcns.c:43:9:Parse_CMD_SET_PID	176	static

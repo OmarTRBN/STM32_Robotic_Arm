@@ -5,6 +5,10 @@ function JointSliderHelperFunction(app, event)
         motorID = '0';
     elseif source == app.Joint2Slider
         motorID = '1';
+    elseif source == app.Joint3Slider
+        motorID = '2';
+    elseif source == app.Joint4Slider
+        motorID = '3';
     else
         return;  % unknown source
     end

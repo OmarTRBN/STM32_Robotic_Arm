@@ -202,7 +202,9 @@ void StartDefaultTask(void *argument)
 		  if (osMutexAcquire(uartMutexHandle, osWaitForever) == osOK) {
 			  SerialComm_Transmit(&appSerialHandle);
 
-			  osSemaphoreAcquire(uartSemHandle, osWaitForever);
+			  if (osSemaphoreAcquire(uartSemHandle, pdMS_TO_TICKS(500)) != osOK) {
+			      sprintf((char*)appSerialHandle.pTxBuffer, "TX timeout.\n");
+			  }
 			  appSerialHandle.responseReadyFlag = 0;
 
 			  osMutexRelease(uartMutexHandle);
@@ -374,7 +376,7 @@ void MyProcessCommand(SerialComm_HandleTypeDef* hserial) {
             break;
 
 		case CMD_SET_PID:
-            Parse_CMD_SET_PID(hserial, &appPidObj);
+            Parse_CMD_SET_PID(hserial, data, &appPidObj);
             break;
 
         default:

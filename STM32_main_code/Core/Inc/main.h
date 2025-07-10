@@ -82,6 +82,10 @@ void Error_Handler(void);
 #define M3_EN_GPIO_Port GPIOA
 #define M3_DIR_Pin GPIO_PIN_5
 #define M3_DIR_GPIO_Port GPIOA
+#define M4_EN_Pin GPIO_PIN_12
+#define M4_EN_GPIO_Port GPIOA
+#define M4_DIR_Pin GPIO_PIN_15
+#define M4_DIR_GPIO_Port GPIOA
 
 /* USER CODE BEGIN Private defines */
 

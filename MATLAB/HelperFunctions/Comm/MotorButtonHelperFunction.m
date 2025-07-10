@@ -5,6 +5,10 @@ function MotorButtonHelperFunction(app, event)
         motorID = '0';
     elseif source == app.M2_Button
         motorID = '1';
+    elseif source == app.M3_Button
+        motorID = '2';
+    elseif source == app.M4_Button
+        motorID = '3';
     else
         return;  % unknown source
     end

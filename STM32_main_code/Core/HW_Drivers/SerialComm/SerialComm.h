@@ -12,7 +12,7 @@
 #include "usart.h"
 
 #define SERIALCOMM_UART &huart1
-#define SERIALCOMM_RX_BUFF_SIZE 200
+#define SERIALCOMM_RX_BUFF_SIZE 500
 #define SERIALCOMM_TX_BUFF_SIZE 50
 
 typedef enum {

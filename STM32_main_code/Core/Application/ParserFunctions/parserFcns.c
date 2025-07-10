@@ -40,52 +40,50 @@ void Parse_CMD_MOTOR_REF(SerialComm_HandleTypeDef* hserial) {
     }
 }
 
-uint8_t Parse_CMD_SET_PID(SerialComm_HandleTypeDef* hserial, MultivariablePID* pid) {
-    char paramType[3] = { hserial->pRxBuffer[2], hserial->pRxBuffer[3], '\0' };
-    char *uart_str = (char *)&hserial->pRxBuffer[2];
-    uint16_t len = strlen(uart_str);
+uint8_t Parse_CMD_SET_PID(SerialComm_HandleTypeDef* hserial, uint8_t* receivedData, MultivariablePID* pid) {
+    if (pid == NULL || receivedData == NULL) return 0;
 
-    // Ensure null termination
-    if (uart_str[len - 1] != '\0') {
-        if (len < hserial->rxBufferSize - 1) {
-            uart_str[len] = '\0';
-        } else {
-            sprintf((char *)hserial->pTxBuffer, "Error: PID input too long!\n");
-            return 0;
-        }
-    }
+    // Cast receivedData to char* for string handling
+    char* receivedStr = (char*)receivedData;
 
-    // Determine parameter type
+    // Check header "CP"
+    if (strncmp(receivedStr, "CP", 2) != 0) return 0;
+
+    // Extract parameter type (KP, KI, KD)
+    char paramType[3] = { receivedStr[2], receivedStr[3], '\0' };
+
     uint16_t chosen_param;
-    if (strncmp(paramType, "KP", 2) == 0) {
+    if (strcmp(paramType, "KP") == 0) {
         chosen_param = CMD_SET_KP;
-    } else if (strncmp(paramType, "KI", 2) == 0) {
+    } else if (strcmp(paramType, "KI") == 0) {
         chosen_param = CMD_SET_KI;
-    } else if (strncmp(paramType, "KD", 2) == 0) {
+    } else if (strcmp(paramType, "KD") == 0) {
         chosen_param = CMD_SET_KD;
     } else {
-        sprintf((char *)hserial->pTxBuffer, "Error: Unknown PID parameter type '%s'\n", paramType);
         return 0;
     }
 
-    // Parse float values
-    float32_t parsed_values[NUM_JOINTS * NUM_JOINTS] = {0};
-    char *data_start = uart_str + 2;
+    float parsed_values[NUM_JOINTS] = {0};
+
+    // Copy the data part to a mutable buffer
+    char dataBuffer[128];  // Make sure this is large enough
+    strncpy(dataBuffer, &receivedStr[4], sizeof(dataBuffer) - 1);
+    dataBuffer[sizeof(dataBuffer) - 1] = '\0';  // Null-terminate
+
     char *token;
-    char *rest = data_start;
+    char *rest = dataBuffer;
     int index = 0;
 
-    while ((token = strtok_r(rest, ",", &rest)) != NULL && index < NUM_JOINTS * NUM_JOINTS) {
-        parsed_values[index++] = (float32_t)atof(token);
+    while ((token = strtok_r(rest, ",", &rest)) != NULL && index < NUM_JOINTS) {
+        parsed_values[index++] = atof(token);
     }
 
-    if (index != NUM_JOINTS * NUM_JOINTS) {
-        sprintf((char *)hserial->pTxBuffer, "Error: Expected %d floats for PID %s, got %d.\n",
-                NUM_JOINTS * NUM_JOINTS, paramType, index);
-        return 0;
-    }
+    if (index != NUM_JOINTS) return 0;
 
     MultivariablePID_SetParameter(pid, parsed_values, chosen_param);
-    sprintf((char *)hserial->pTxBuffer, "PID %s parameters updated successfully.\n", paramType);
+//
+//    snprintf((char *)hserial->pTxBuffer, hserial->txBufferSize,
+//             "PID %s parameters updated successfully.\n", paramType);
+
     return 1;
 }

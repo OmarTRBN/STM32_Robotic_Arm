@@ -23,7 +23,7 @@ function sendControllerParameters(serialObj, params, prefix, numJoints)
         warning('Serial port is not open or invalid');
         return;
     end
-
+cd 
     % Validate bounds
     if numJoints < 1 || numJoints > 4
         warning('Invalid joint count: %d. Must be 1–4.', numJoints);

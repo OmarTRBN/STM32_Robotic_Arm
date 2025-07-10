@@ -1,9 +1,9 @@
-../Core/Src/freertos.c:291:6:DataTxFcn	8	static
-../Core/Src/freertos.c:223:6:ReadAs5600Task	24	static
-../Core/Src/freertos.c:319:6:TrajFcn	16	static
-../Core/Src/freertos.c:250:6:RunControllerTask	40	static
+../Core/Src/freertos.c:293:6:DataTxFcn	8	static
+../Core/Src/freertos.c:225:6:ReadAs5600Task	24	static
+../Core/Src/freertos.c:321:6:TrajFcn	16	static
+../Core/Src/freertos.c:252:6:RunControllerTask	40	static
 ../Core/Src/freertos.c:193:6:StartDefaultTask	24	static
 ../Core/Src/freertos.c:126:6:MX_FREERTOS_Init	8	static
-../Core/Src/freertos.c:357:6:MyProcessCommand	32	static
-../Core/Src/freertos.c:388:6:HAL_UART_TxCpltCallback	0	static
-../Core/Src/freertos.c:393:6:HAL_UART_RxCpltCallback	0	static
+../Core/Src/freertos.c:359:6:MyProcessCommand	32	static
+../Core/Src/freertos.c:390:6:HAL_UART_TxCpltCallback	0	static
+../Core/Src/freertos.c:395:6:HAL_UART_RxCpltCallback	0	static

@@ -48,25 +48,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-//char response[50];
 
-// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-//char globalDataArray[1100];
-//volatile uint8_t globalControllerFlag = 0;
-//volatile HAL_StatusTypeDef statusCheck = 0;
-// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-//CommandProtocol_Handle cmdHandle;
-// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-//StepMotor l1_motor;
-//StepMotor l2_motor;
-//StepMotor* motorArray[NUM_JOINTS];
-// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-//float32_t q_set[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
-//float32_t q_meas[NUM_JOINTS] = { 2048.0, 2048.0, 2048.0, 2048.0 };
-//MultivariablePID pidObj;
-// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
-//Trajectory robotTraj;
-// 🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊🥊
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -105,7 +87,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-//  DWT_Init();
+
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
@@ -116,6 +98,7 @@ int main(void)
   MX_TIM5_Init();
   MX_TIM9_Init();
   MX_TIM3_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
   App_Init();
   /* USER CODE END 2 */
@@ -154,16 +137,6 @@ int main(void)
 //		  StepMotor_SetSpeedLUT(&l2_motor, pidObj.output_data[1]);
 //	  }
 //
-//	  if (HAL_GetTick() - lastTime > interval)
-//	  {
-//		  AS5600_Mux_ReadAllAngles(&sensors);
-//		  for (uint8_t i = 0; i < sensors.num_sensors; i++) {
-//			  q_meas[i] = sensors.angles[i];
-//		  }
-//
-//		  lastTime = HAL_GetTick();
-//	  }
-
   }
   /* USER CODE END 3 */
 }

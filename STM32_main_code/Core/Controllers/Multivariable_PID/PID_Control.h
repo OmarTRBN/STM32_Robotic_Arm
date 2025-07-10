@@ -57,8 +57,7 @@ void MultivariablePID_Init(MultivariablePID *pid);
 void MultivariablePID_SetSetpoint(MultivariablePID *pid, float32_t *setpoint);
 void MultivariablePID_Compute(MultivariablePID *pid, float32_t *meas);
 
-void MultivariablePID_SetParameter(MultivariablePID *pid, float32_t *new_matrix, uint16_t chosen_param);
-
+void MultivariablePID_SetParameter(MultivariablePID *pid, float32_t *new_vector, uint16_t chosen_param);
 void MultivariablePID_Reset(MultivariablePID *pid);
 
 #endif /* CONTROLLERS_PID_CONTROL_H_ */

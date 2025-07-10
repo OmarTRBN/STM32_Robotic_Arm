@@ -98,29 +98,34 @@ void MultivariablePID_Compute(MultivariablePID *pid, float32_t *meas) {
   arm_copy_f32(pid->error_data, pid->error_prev_data, NUM_JOINTS);
 }
 
-void MultivariablePID_SetParameter(MultivariablePID *pid, float32_t *new_matrix, uint16_t chosen_param) {
-    if (pid == NULL || new_matrix == NULL) return;
+void MultivariablePID_SetParameter(MultivariablePID *pid, float32_t *new_vector, uint16_t chosen_param) {
+    if (pid == NULL || new_vector == NULL) return; //
 
-    float32_t *target_data = NULL;
+    float32_t *target_data = NULL; //
     // Select the appropriate matrix based on the chosen parameter
-	switch (chosen_param) {
-		case CMD_SET_KP:
-			target_data = pid->Kp_data;
-			break;
+	switch (chosen_param) { //
+		case CMD_SET_KP: //
+			target_data = pid->Kp_data; //
+			break; //
 
-		case CMD_SET_KI:
-			target_data = pid->Ki_data;
-			break;
+		case CMD_SET_KI: //
+			target_data = pid->Ki_data; //
+			break; //
 
-		case CMD_SET_KD:
-			target_data = pid->Kd_data;
-			break;
+		case CMD_SET_KD: //
+			target_data = pid->Kd_data; //
+			break; //
 
-		default:
+		default: //
 			// Invalid parameter choice
-			return;
+			return; //
 	}
 
-    arm_copy_f32(new_matrix, target_data, NUM_JOINTS*NUM_JOINTS);
-    // No need to re-initialize the matrix as the data pointer remains the same
+    // Set only the diagonal elements of the target matrix
+    // Assuming matrices are stored in row-major order:
+    // element at (row, col) is at index (row * NUM_JOINTS + col)
+    for (int i = 0; i < NUM_JOINTS; i++) {
+        target_data[i * NUM_JOINTS + i] = new_vector[i];
+    }
+    // No need to re-initialize the matrix as the data pointer remains the same //
 }
